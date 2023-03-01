@@ -15,3 +15,8 @@ As a start, the hardware containing the state elements will be designed. These
 elements include the memories and the architectural state (the program counter
 and registers). Then, to compute the new state based on the current state blocks
 of combinational logic between the state elements will be added.
+
+### PC
+
+The program counter (PC) consists of 32 flip flops (FF) that store the current
+instruction and its input *nextPc*, indicates the address of the next instruction.
