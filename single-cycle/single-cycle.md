@@ -20,3 +20,7 @@ of combinational logic between the state elements will be added.
 
 The program counter (PC) consists of 32 flip flops (FF) that store the current
 instruction and its input *nextPc*, indicates the address of the next instruction.
+
+### Instruction Memory
+
+The instruction memory has a single read port (simplification). It takes a 32-bit instruction *address* input, and reads the 32-bit data from that address onto the output, *instruction*.
