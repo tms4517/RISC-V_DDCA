@@ -23,4 +23,6 @@ instruction and its input *nextPc*, indicates the address of the next instructio
 
 ### Instruction Memory
 
-The instruction memory has a single read port (simplification). It takes a 32-bit instruction *address* input, and reads the 32-bit data from that address onto the output, *instruction*.
+The instruction memory has a single read port (simplification). It takes a 32-bit
+instruction *address* input, and reads the 32-bit data from that address onto the
+output, *instruction*.
