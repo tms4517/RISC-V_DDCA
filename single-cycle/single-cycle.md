@@ -26,3 +26,9 @@ instruction and its input *nextPc*, indicates the address of the next instructio
 The instruction memory has a single read port (simplification). It takes a 32-bit
 instruction *address* input, and reads the 32-bit data from that address onto the
 output, *instruction*.
+
+## Register File
+
+The register file consists of 32-registers of 32-bits each. It consists of two
+read address ports and one write address port (all 5 bits wide) that allow two
+registers to be read and one register to be written simultaneously.
