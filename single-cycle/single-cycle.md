@@ -32,3 +32,10 @@ output, *instruction*.
 The register file consists of 32-registers of 32-bits each. It consists of two
 read address ports and one write address port (all 5 bits wide) that allow two
 registers to be read and one register to be written simultaneously.
+
+## Data Memory
+
+The data memory has a single read/write address port, *rwAddress*. If its
+*writeEnable* is asserted, then it *writesData* to the memory element on the
+rising edge of the clock. If its write enable is 0, then it reads data from the
+memory element to the *readData* bus.
