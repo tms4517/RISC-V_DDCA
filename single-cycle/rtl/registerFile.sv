@@ -7,7 +7,7 @@ module registerFile
   , input  var logic [4:0]  i_readAddress2
 
   , input  var logic        i_writeEnable
-  , input  var logic [4:0]  i_writeAddress3
+  , input  var logic [4:0]  i_writeAddress
   , input  var logic [31:0] i_writeData
 
   , output var logic [31:0] o_readData1
@@ -18,9 +18,9 @@ module registerFile
 
   always_ff @(posedge i_clk)
     if (i_writeEnable)
-      registerFile[i_writeAddress3] <= i_writeData;
+      registerFile[i_writeAddress] <= i_writeData;
     else
-      registerFile[i_writeAddress3] <= registerFile[i_writeAddress3];
+      registerFile[i_writeAddress] <= registerFile[i_writeAddress];
 
   // x0 has been hardwired to 32'h0.
   always_comb o_readData1 = (i_readAddress1 != '0) ? registerFile[i_readAddress1] : '0;
