@@ -16,6 +16,10 @@ elements include the memories and the architectural state (the program counter
 and registers). Then, to compute the new state based on the current state blocks
 of combinational logic between the state elements will be added.
 
+![state elements](/single-cycle/pics/stateElements.png)
+
+Ignore the port names. **
+
 ### PC
 
 The program counter (PC) consists of 32 flip flops (FF) that store the current
