@@ -1,7 +1,3 @@
-// Three ported register file with two read ports and 1 write port. The read ports
-// can be read combinationally and the register file can be written to on the
-// rising edge of the clock.
-
 `default_nettype none
 
 module registerFile
