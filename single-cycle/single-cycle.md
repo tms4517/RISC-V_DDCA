@@ -31,16 +31,30 @@ The instruction memory has a single read port (simplification). It takes a 32-bi
 instruction *address* input, and reads the 32-bit data from that address onto the
 output, *instruction*.
 
-## Register File
+### Register File
 
 The register file consists of 32-registers of 32-bits each. It consists of two
 *readAddress* ports that read data from the memory elements to their respective
 *readData* ports. It also consists of a *writeAddress* port that *writeData* to
 the memory element when *writeEnable* is asserted.
 
-## Data Memory
+### Data Memory
 
 The data memory has a single read/write address port, *rwAddress*. If its
 *writeEnable* is asserted, then it *writesData* to the memory element on the
 rising edge of the clock. If its write enable is 0, then it reads data from the
 memory element to the *readData* port.
+
+## Core Instructions
+
+### LW
+
+![lw](pics/lw.png)
+
+The load word (LW) I-type instruction is used for loading data from memory into
+a register.
+
+The instruction uses the signed 12-bit offset to calculate the memory address,
+which is obtained by adding the offset to the value in the source register rs1.
+The resulting memory address is then used to fetch the 32-bit word from memory
+and store it in the destination register rd.
