@@ -1,6 +1,6 @@
 `default_nettype none
 
-module alu
+module extend
   ( input  var logic [11:0] i_immediate
 
   , output var logic [31:0] o_immediateExtended
