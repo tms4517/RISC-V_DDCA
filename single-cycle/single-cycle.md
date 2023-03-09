@@ -47,14 +47,38 @@ memory element to the *readData* port.
 
 ## Core Instructions
 
+A top level module - *singleCycleTop_elaborated.sv* connects the state elements
+to the combinational logic.
+
+The following sample program exercises different types of instructions and it
+will be used to guide the combinational logic connections.
+
+![sample program](pics/sample_program.png)
+
 ### LW
 
 ![lw](pics/lw.png)
 
-The load word (LW) I-type instruction is used for loading data from memory into
-a register.
+The I-type instruction LW (Load Word) is utilized to fetch data from memory
+and store it in a register.
 
-The instruction uses the signed 12-bit offset to calculate the memory address,
-which is obtained by adding the offset to the value in the source register rs1.
-The resulting memory address is then used to fetch the 32-bit word from memory
-and store it in the destination register rd.
+The instruction takes the form of rd <= mem[rs1 + imm12], where the rs1 field
+indicates the register containing the base address of the data memory. This
+field is connected to the i_readAddress1 port of the register file, while the
+o_readData1 port outputs the base address.
+
+The 12-bit immediate field of the instruction is sign-extended to 32 bits, and
+the ALU adds it to the base address to obtain the memory address from which to
+read the data.
+
+The destination register for the loaded data is specified in the rd field of
+the instruction. This field is connected to the i_writeAddress port of the
+register file, while the data to be saved in the register is connected to the
+*writeData* port of the register file. During the execution of the LW instruction,
+a control signal known as i_regWrite is connected to the i_writeEnable port and
+is asserted.
+
+Below is a schematic of the state elements and combinational logic connected to
+implement the LW instruction.
+
+![lw schematic](pics/lw_sampleProgram_full.png)
