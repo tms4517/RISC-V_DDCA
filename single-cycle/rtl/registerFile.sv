@@ -16,11 +16,11 @@ module registerFile
 
   logic [31:0] registerFile [31:0]; // Should be stored on SRAM.
 
+  // TODO: Check if synth tools inerpret 'always_ff' as DFF or memory blocks.
+  // No need of explicit else statement for memory blocks.
   always_ff @(posedge i_clk)
     if (i_writeEnable)
       registerFile[i_writeAddress] <= i_writeData;
-    else
-      registerFile[i_writeAddress] <= registerFile[i_writeAddress];
 
   // x0 has been hardwired to 32'h0.
   always_comb o_readData1 = (i_readAddress1 != '0) ? registerFile[i_readAddress1] : '0;
