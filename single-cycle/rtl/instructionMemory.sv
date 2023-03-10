@@ -10,6 +10,7 @@ module instructionMemory
   logic [31:0] RAM [63:0];
 
   // Read and load data from a specified text file into the specified memory array.
+  // Executes only once at the start of the simulation.
   initial $readmemh("riscvtest.txt", RAM);
 
   // Read word at the specific address. Only the first 8 bits are useful since
