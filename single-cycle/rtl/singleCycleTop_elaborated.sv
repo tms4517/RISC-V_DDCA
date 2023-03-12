@@ -64,6 +64,8 @@ module singleCycleTop_elaborated
 
   // I-Type: Find the base address of the data memory stored in rs1 and
   //         write to rd, rd <= mem[rs1 + immediate].
+  // S-Type: Find the base address of the data memory stored in rs1 and read rs2
+  //         which contains the data to write to memory.
   registerFile u_registerFile
   ( .i_clk
 
@@ -96,6 +98,7 @@ module singleCycleTop_elaborated
   // {{{ Data Memory
 
   // I-Type: Output data stored in location: mem[rs1 + immediate]
+  // S-Type: Store data in memory location given by rs2 <= mem[rs1 + immediate].
   dataMemory u_dataMemory
   ( .i_clk
 
