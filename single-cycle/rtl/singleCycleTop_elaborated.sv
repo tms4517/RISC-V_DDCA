@@ -50,14 +50,13 @@ module singleCycleTop_elaborated
   logic [1:0]  aluControl;
 
   // Extract fields from instruction.
-  always_comb immediate = instruction[31:20];
   always_comb rs1       = instruction[19:15];
   always_comb rs2       = instruction[24:20];
   always_comb rd        = instruction[11:7];
 
-  // Sign extend the immediate field to 32 bits.
+  // Extract the immediate from the instruction and sign extend to 32 bits.
   extend u_extend
-  ( .i_immediate         (immediate)
+  ( .i_instruction       (instruction)
   , .o_immediateExtended (addressOffset)
   );
 
