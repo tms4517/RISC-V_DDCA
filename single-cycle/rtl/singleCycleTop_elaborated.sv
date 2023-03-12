@@ -33,8 +33,6 @@ module singleCycleTop_elaborated
 
   // }}} Instruction Memory
 
-  // {{{ Register File
-
   logic [11:0] immediate;
   logic [4:0]  rs1;
   logic [4:0]  rd;
@@ -50,17 +48,15 @@ module singleCycleTop_elaborated
   logic [1:0]  aluControl;
 
   // Extract fields from instruction.
-  always_comb rs1       = instruction[19:15];
-  always_comb rs2       = instruction[24:20];
-  always_comb rd        = instruction[11:7];
+  always_comb rs1 = instruction[19:15];
+  always_comb rs2 = instruction[24:20];
+  always_comb rd  = instruction[11:7];
 
   // Extract the immediate from the instruction and sign extend to 32 bits.
   extend u_extend
   ( .i_instruction       (instruction)
   , .o_immediateExtended (addressOffset)
   );
-
-  always_comb regWrite = '1;
 
   // I-Type: Find the base address of the data memory stored in rs1 and
   //         write to rd, rd <= mem[rs1 + immediate].
@@ -80,9 +76,6 @@ module singleCycleTop_elaborated
   , .o_readData2    (dataToMemory)
   );
 
-  // Set to sum for an I-Type instruction.
-  always_comb aluControl = '0;
-
   // I-Type: Calculate the base address of data memory: rs1 + immediate.
   alu u_alu
   ( .i_a          (baseAddress)
@@ -92,8 +85,6 @@ module singleCycleTop_elaborated
 
   , .o_result     (dataAddress)
   );
-
-  // }}} Register File
 
   // {{{ Data Memory
 
