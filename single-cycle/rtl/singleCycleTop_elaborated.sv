@@ -44,6 +44,7 @@ module singleCycleTop_elaborated
   logic        regWrite;
   logic [31:0] baseAddress;
   logic [31:0] dataFromMemory;
+  logic [31:0] dataToMemory;
 
   logic [31:0] dataAddress;
   logic [1:0]  aluControl;
@@ -51,6 +52,7 @@ module singleCycleTop_elaborated
   // Extract fields from instruction.
   always_comb immediate = instruction[31:20];
   always_comb rs1       = instruction[19:15];
+  always_comb rs2       = instruction[24:20];
   always_comb rd        = instruction[11:7];
 
   // Sign extend the immediate field to 32 bits.
@@ -67,14 +69,14 @@ module singleCycleTop_elaborated
   ( .i_clk
 
   , .i_readAddress1 (rs1)
-  , .i_readAddress2 ('0)
+  , .i_readAddress2 (rs2)
 
   , .i_writeEnable  (regWrite)
   , .i_writeAddress (rd)
   , .i_writeData    (dataFromMemory)
 
   , .o_readData1    (baseAddress)
-  , .o_readData2    ()
+  , .o_readData2    (dataToMemory)
   );
 
   // Set to sum for an I-Type instruction.
@@ -101,7 +103,7 @@ module singleCycleTop_elaborated
   , .i_rwAddress   (dataAddress)
 
   , .i_writeEnable ('0)
-  , .i_writeData   ('0)
+  , .i_writeData   (dataToMemory)
 
   , .o_readData    (dataFromMemory)
   );
