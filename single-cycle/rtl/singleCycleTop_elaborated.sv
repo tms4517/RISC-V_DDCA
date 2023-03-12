@@ -5,6 +5,25 @@ module singleCycleTop_elaborated
   , input var logic i_srst
   );
 
+  // {{{ Main controller
+  // Decode the operand to determine the state elements and ALU control signals.
+
+  logic       registerWrite;
+  logic       memoryWrite;
+  logic [1:0] aluControl;
+  logic [1:0] immediateSelect;
+
+  controller u_controller
+  ( .i_operand         (operand)
+
+  , .o_regWrite        (regWrite)        // Write to register file.
+  , .o_immediateSelect (immediateSelect) // Extract immediate bits of instruction.
+  , .o_aluControl      (aluControl)      // ALU logical operation.
+  , .o_memWrite        (memWrite)        // Write to memory.
+  );
+
+  // }}} Main controller
+
   // {{{ PC
 
   logic [31:0] pc, nextPc;
@@ -39,22 +58,22 @@ module singleCycleTop_elaborated
 
   logic [31:0] addressOffset;
 
-  logic        regWrite;
   logic [31:0] baseAddress;
   logic [31:0] dataFromMemory;
   logic [31:0] dataToMemory;
 
   logic [31:0] dataAddress;
-  logic [1:0]  aluControl;
 
   // Extract fields from instruction.
-  always_comb rs1 = instruction[19:15];
-  always_comb rs2 = instruction[24:20];
-  always_comb rd  = instruction[11:7];
+  always_comb operand = instruction[6:0];
+  always_comb rs1     = instruction[19:15];
+  always_comb rs2     = instruction[24:20];
+  always_comb rd      = instruction[11:7];
 
   // Extract the immediate from the instruction and sign extend to 32 bits.
   extend u_extend
   ( .i_instruction       (instruction)
+    .i_immediateSelect   (immediateSelect)
   , .o_immediateExtended (addressOffset)
   );
 
@@ -95,7 +114,7 @@ module singleCycleTop_elaborated
 
   , .i_rwAddress   (dataAddress)
 
-  , .i_writeEnable ('0)
+  , .i_writeEnable (memWrite)
   , .i_writeData   (dataToMemory)
 
   , .o_readData    (dataFromMemory)
