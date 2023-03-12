@@ -5,11 +5,27 @@ module singleCycleTop_elaborated
   , input var logic i_srst
   );
 
+  logic [31:0] pc;
+
+  logic [31:0] instruction;
+
+  logic [6:0]  operand;
+  logic [11:0] immediate;
+  logic [4:0]  rs1;
+  logic [4:0]  rs2;
+  logic [4:0]  rd;
+
+  // Extract fields from instruction.
+  always_comb operand = instruction[6:0];
+  always_comb rs1     = instruction[19:15];
+  always_comb rs2     = instruction[24:20];
+  always_comb rd      = instruction[11:7];
+
   // {{{ Main controller
   // Decode the operand to determine the state elements and ALU control signals.
 
-  logic       registerWrite;
-  logic       memoryWrite;
+  logic       regWrite;
+  logic       memWrite;
   logic [1:0] aluControl;
   logic [1:0] immediateSelect;
 
@@ -26,7 +42,7 @@ module singleCycleTop_elaborated
 
   // {{{ PC
 
-  logic [31:0] pc, nextPc;
+  logic [31:0] nextPc;
 
   // Next address in the instruction memory.
   always_comb nextPc = pc + 32'h4;
@@ -43,8 +59,6 @@ module singleCycleTop_elaborated
 
   // {{{ Instruction Memory
 
-  logic [31:0] instruction;
-
   instructionMemory u_instructionMemory
   ( .i_address     (pc)
   , .o_instruction (instruction)
@@ -52,30 +66,24 @@ module singleCycleTop_elaborated
 
   // }}} Instruction Memory
 
-  logic [11:0] immediate;
-  logic [4:0]  rs1;
-  logic [4:0]  rd;
+  // {{{ Extend Immediate
 
   logic [31:0] addressOffset;
-
-  logic [31:0] baseAddress;
-  logic [31:0] dataFromMemory;
-  logic [31:0] dataToMemory;
-
-  logic [31:0] dataAddress;
-
-  // Extract fields from instruction.
-  always_comb operand = instruction[6:0];
-  always_comb rs1     = instruction[19:15];
-  always_comb rs2     = instruction[24:20];
-  always_comb rd      = instruction[11:7];
 
   // Extract the immediate from the instruction and sign extend to 32 bits.
   extend u_extend
   ( .i_instruction       (instruction)
-    .i_immediateSelect   (immediateSelect)
+  , .i_immediateSelect   (immediateSelect)
+
   , .o_immediateExtended (addressOffset)
   );
+
+  // }}} Extend Immediate
+
+  // {{{ Register File
+
+  logic [31:0] baseAddress;
+  logic [31:0] dataToMemory;
 
   // I-Type: Find the base address of the data memory stored in rs1 and
   //         write to rd, rd <= mem[rs1 + immediate].
@@ -95,6 +103,12 @@ module singleCycleTop_elaborated
   , .o_readData2    (dataToMemory)
   );
 
+  // }}} Register File
+
+  // {{{ ALU
+
+  logic [31:0] dataAddress;
+
   // I-Type: Calculate the base address of data memory: rs1 + immediate.
   alu u_alu
   ( .i_a          (baseAddress)
@@ -105,7 +119,11 @@ module singleCycleTop_elaborated
   , .o_result     (dataAddress)
   );
 
+  // }}} ALU
+
   // {{{ Data Memory
+
+  logic [31:0] dataFromMemory;
 
   // I-Type: Output data stored in location: mem[rs1 + immediate]
   // S-Type: Store data in memory location given by rs2 <= mem[rs1 + immediate].
