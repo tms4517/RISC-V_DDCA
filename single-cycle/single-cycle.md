@@ -45,6 +45,17 @@ The data memory has a single read/write address port, *rwAddress*. If its
 rising edge of the clock. If its write enable is 0, then it reads data from the
 memory element to the *readData* port.
 
+## Combinational logic
+
+### Controller
+
+A module consisting of a MUXes is used to decode the operand to determine the value
+of control signals used to configure the state elements:
+- A read/write from the register file is taking place.
+- A read/write from the data memory is taking place.
+- ALU logical operation.
+- Which bits of the instruction contain the immediate field bits.
+
 ## Core Instructions
 
 A top level module - *singleCycleTop_elaborated.sv* connects the state elements
@@ -82,3 +93,32 @@ Below is a schematic of the state elements and combinational logic connected to
 implement the LW instruction.
 
 ![lw schematic](pics/lw_sampleProgram_full.png)
+
+### SW
+
+![sw](pics/sw.png)
+
+The S-type instruction SW (Store Word) is used to store data from a register into
+memory at a specified memory address.
+
+The instruction takes the form of mem[rs1 + imm12] <= rs2, where the rs1 field
+indicates the register containing the base address of the data memory. This
+field is connected to the *i_readAddress1* port of the register file, while the
+*o_readData1* port outputs the base address.
+
+The 12-bit immediate field of the instruction is sign-extended to 32 bits, and
+the ALU adds it to the base address to obtain the memory address to store the data.
+This address is connected *i_rwAddress* of the data memory.
+
+The source register containing the data to be stored is specified in the rs2 field
+of the instruction. This field is connected to the *i_readAddress2* port of the
+register file, and the data read is connected to the *i_writeData* port of the
+data memory.
+
+During the execution of the LW instruction, the control signal *i_regWrite* is deasserted since no register is being written to. Since, a memory write is taking
+place, the memory *i_writEnable* signal is asserted.
+
+Below is a schematic of the state elements and combinational logic connected to
+implement the LW instruction.
+
+![sw schematic](pics/sw_sampleProgram_full.png)
