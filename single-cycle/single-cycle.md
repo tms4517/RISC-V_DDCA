@@ -75,18 +75,18 @@ and store it in a register.
 
 The instruction takes the form of rd <= mem[rs1 + imm12], where the rs1 field
 indicates the register containing the base address of the data memory. This
-field is connected to the i_readAddress1 port of the register file, while the
-o_readData1 port outputs the base address.
+field is connected to the *i_readAddress1* port of the register file, while the
+*o_readData1* port outputs the base address.
 
 The 12-bit immediate field of the instruction is sign-extended to 32 bits, and
 the ALU adds it to the base address to obtain the memory address from which to
 read the data.
 
 The destination register for the loaded data is specified in the rd field of
-the instruction. This field is connected to the i_writeAddress port of the
+the instruction. This field is connected to the *i_writeAddress* port of the
 register file, while the data to be saved in the register is connected to the
-*writeData* port of the register file. During the execution of the LW instruction,
-a control signal known as i_regWrite is connected to the i_writeEnable port and
+*i_writeData* port of the register file. During the execution of the LW instruction,
+a control signal known as *i_regWrite* is connected to the *i_writeEnable* port and
 is asserted.
 
 Below is a schematic of the state elements and combinational logic connected to
@@ -115,7 +115,8 @@ of the instruction. This field is connected to the *i_readAddress2* port of the
 register file, and the data read is connected to the *i_writeData* port of the
 data memory.
 
-During the execution of the LW instruction, the control signal *i_regWrite* is deasserted since no register is being written to. Since, a memory write is taking
+During the execution of the LW instruction, the control signal *i_regWrite* is 
+deasserted since no register is being written to. Since, a memory write is taking
 place, the memory *i_writEnable* signal is asserted.
 
 Below is a schematic of the state elements and combinational logic connected to
