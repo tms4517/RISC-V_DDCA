@@ -27,13 +27,11 @@ module singleCycleTop_elaborated
   logic       regWrite;
   logic       memWrite;
   logic [1:0] aluControl;
-  logic [1:0] immediateSelect;
 
   controller u_controller
   ( .i_operand         (operand)
 
   , .o_regWrite        (regWrite)        // Write to register file.
-  , .o_immediateSelect (immediateSelect) // Extract immediate bits of instruction.
   , .o_aluControl      (aluControl)      // ALU logical operation.
   , .o_memWrite        (memWrite)        // Write to memory.
   );
@@ -73,7 +71,6 @@ module singleCycleTop_elaborated
   // Extract the immediate from the instruction and sign extend to 32 bits.
   extend u_extend
   ( .i_instruction       (instruction)
-  , .i_immediateSelect   (immediateSelect)
 
   , .o_immediateExtended (addressOffset)
   );
