@@ -66,7 +66,7 @@ will be used to guide the combinational logic connections.
 
 ![sample program](pics/sample_program.png)
 
-### LW
+### I-Type
 
 ![lw](pics/lw.png)
 
@@ -94,7 +94,7 @@ implement the LW instruction.
 
 ![lw schematic](pics/lw_sampleProgram_full.png)
 
-### SW
+### S-Type
 
 ![sw](pics/sw.png)
 
