@@ -39,7 +39,7 @@ module singleCycleTop_elaborated
   , .i_funct7bit5        (funct7[5])
 
   , .o_regWrite          (regWrite)          // Write to register file.
-  , .o_aluInputB         (aluInputBSel)      // Select the ALU input B.
+  , .o_aluInputBSel      (aluInputBSel)      // Select the ALU input B.
   , .o_aluLogicOperation (aluLogicOperation) // Select the ALU logical operation.
   , .o_memWrite          (memWrite)          // Write to memory.
   );
@@ -115,18 +115,19 @@ module singleCycleTop_elaborated
   // {{{ ALU
 
   logic [31:0] dataAddress;
+  logic [31:0] aluInputB;
 
   always_comb aluInputB = aluInputBSel ? addressOffset : regReadData2;
 
   // I-Type: Calculate the base address of data memory: rs1 + immediate.
   // R-Type: Perform logical/arithmetic operation: rs1 op rs2
   alu u_alu
-  ( .i_a                   (baseAddress)
-  , .i_b                   (aluInputB)
+  ( .i_a                 (baseAddress)
+  , .i_b                 (aluInputB)
 
-  , .i_aluLogicalOperation (aluLogicalOperation)
+  , .i_aluLogicOperation (aluLogicOperation)
 
-  , .o_result              (dataAddress)
+  , .o_result            (dataAddress)
   );
 
   // }}} ALU

@@ -9,7 +9,7 @@ module controller
 
   , output var logic       o_regWrite
   , output var logic       o_aluInputBSel
-  , output var logic [1:0] o_aluLogicOperation
+  , output var logic [3:0] o_aluLogicOperation
   , output var logic       o_memWrite
   );
 
