@@ -9,7 +9,8 @@ module extend
   );
 
   // Decode opcode to find the immediate bits to concatenate, and sign extend
-  // to 32 bits.
+  // to 32 bits. For the B-Type instruction, the LSB is 0 so that the branch
+  // target address is aligned to a 2-byte boundary.
   always_comb
     case (i_instruction[6:0])
       I:       o_immediateExtended =
