@@ -28,8 +28,8 @@ module singleCycleTop_elaborated
   // {{{ Main controller
   // Decode the operand to determine the state elements and ALU control signals.
 
-  logic       regWrite;
-  logic       memWrite;
+  logic       regWriteEn;
+  logic       memWriteEnable;
   logic       aluInputBSel;
   logic [3:0] aluLogicOperation;
   logic       regWriteDataSel;
@@ -39,10 +39,10 @@ module singleCycleTop_elaborated
   , .i_funct3            (funct3)
   , .i_funct7bit5        (funct7[5])
 
-  , .o_regWrite          (regWrite)          // Write to register file.
+  , .o_regWriteEn        (regWriteEn)        // Enable write to register file.
   , .o_aluInputBSel      (aluInputBSel)      // Select the ALU input B.
   , .o_aluLogicOperation (aluLogicOperation) // Select the ALU logical operation.
-  , .o_memWrite          (memWrite)          // Write to memory.
+  , .o_memWriteEn        (memWriteEn)        // Enable write to memory write.
   , .o_regWriteDataSel   (regWriteDataSel)   // Select data to write to register file.
   );
 
@@ -108,9 +108,9 @@ module singleCycleTop_elaborated
   , .i_readAddress1 (rs1)
   , .i_readAddress2 (rs2)
 
-  , .i_writeEnable  (regWrite)
+  , .i_writeEnable  (regWriteEn)
   , .i_writeAddress (rd)
-  , .i_writeData    (dataFromMemory)
+  , .i_writeData    (regWriteData)
 
   , .o_readData1    (baseAddress)
   , .o_readData2    (regReadData2)
@@ -125,7 +125,8 @@ module singleCycleTop_elaborated
 
   always_comb aluInputB = aluInputBSel ? addressOffset : regReadData2;
 
-  // I-Type: Calculate the base address of data memory: rs1 + immediate.
+  // I-Type: Calculate the address of data memory: rs1 + immediate.
+  // S-Type: Calculate the address of data memory: rs1 + immediate.
   // R-Type: Perform logical/arithmetic operation: rs1 op rs2
   alu u_alu
   ( .i_a                 (baseAddress)
@@ -144,12 +145,13 @@ module singleCycleTop_elaborated
 
   // I-Type: Output data stored in location: mem[rs1 + immediate]
   // S-Type: Store data in memory location given by rs2 <= mem[rs1 + immediate].
+  // R-Type: No data gets stored in memory.
   dataMemory u_dataMemory
   ( .i_clk
 
   , .i_rwAddress   (dataAddress)
 
-  , .i_writeEnable (memWrite)
+  , .i_writeEnable (memWriteEnable)
   , .i_writeData   (regReadData2)
 
   , .o_readData    (dataFromMemory)

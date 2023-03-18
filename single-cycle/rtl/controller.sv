@@ -7,19 +7,19 @@ module controller
   , input  var logic [2:0] i_funct3
   , input  var logic       i_funct7bit5
 
-  , output var logic       o_regWrite
+  , output var logic       o_regWriteEn
   , output var logic       o_aluInputBSel
   , output var logic [3:0] o_aluLogicOperation
-  , output var logic       o_memWrite
+  , output var logic       o_memWriteEn
   , output var logic       o_regWriteDataSel
   );
 
   // Decode operand to determine if the instruction involves a register write.
   always_comb
     case (i_operand)
-      I:       o_regWrite = '1;
-      S:       o_regWrite = '0;
-      default: o_regWrite = 'x;
+      I:       o_regWriteEn = '1;
+      S:       o_regWriteEn = '0;
+      default: o_regWriteEn = 'x;
     endcase
 
   // Decode operand to determine the input of the ALU i_b port.
@@ -50,9 +50,9 @@ module controller
   // Decode operand to determine if the instruction involves a memory write.
   always_comb
     case (i_operand)
-      I:       o_memWrite = '0;
-      S:       o_memWrite = '1;
-      default: o_memWrite = 'x;
+      I:       o_memWriteEn = '0;
+      S:       o_memWriteEn = '1;
+      default: o_memWriteEn = 'x;
     endcase
 
   // Decode operand to determine if the input to the write data port of the
