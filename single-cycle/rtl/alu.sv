@@ -6,14 +6,14 @@ module alu
   ( input  var logic [31:0] i_a
   , input  var logic [31:0] i_b
 
-  , input  var logic [3:0]  i_aluLogicalOperation
+  , input  var logic [3:0]  i_aluLogicOperation
 
   , output var logic [31:0] o_result
   );
 
   // TODO: Add more logical operations.
   always_comb
-    case (i_aluLogicalOperation)
+    case (i_aluLogicOperation)
       ADD:     o_result = i_a + i_b;
       SUB:     o_result = i_a + (~i_b+1'b1);
       AND:     o_result = i_a & i_b;

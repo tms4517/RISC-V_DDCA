@@ -4,10 +4,12 @@ import pa_riscv::*;
 
 module controller
   ( input  var logic [6:0] i_operand
+  , input  var logic [2:0] i_funct3
+  , input  var logic       i_funct7bit5
 
   , output var logic       o_regWrite
   , output var logic       o_aluInputBSel
-  , output var logic [1:0] o_aluControl
+  , output var logic [1:0] o_aluLogicOperation
   , output var logic       o_memWrite
   );
 
@@ -28,13 +30,21 @@ module controller
       default: o_aluInputBSel = 'x;
     endcase
 
+
+  logic [3:0] rTypeOperation;
+
+  // Bit 5 of funct7 and funct3 are used for R-Type instructions to determine
+  // the operation.
+  always_comb rTypeOperation = {i_funct7bit5, i_funct3};
+
   // Decode operand to determine the logical operation performed by the ALU for
   // the instruction.
   always_comb
     case (i_operand)
-      I:       o_aluControl = 2'b00;
-      S:       o_aluControl = 2'b00;
-      default: o_aluControl = 2'bxx;
+      I:       o_aluLogicOperation = 4'b0000;
+      S:       o_aluLogicOperation = 4'b0000;
+      R:       o_aluLogicOperation = rTypeOperation;
+      default: o_aluLogicOperation = 4'bxxxx;
     endcase
 
   // Decode operand to determine if the instruction involves a memory write.
