@@ -115,7 +115,7 @@ of the instruction. This field is connected to the *i_readAddress2* port of the
 register file, and the data read is connected to the *i_writeData* port of the
 data memory.
 
-During the execution of the LW instruction, the control signal *i_regWrite* is 
+During the execution of the LW instruction, the control signal *i_regWrite* is
 deasserted since no register is being written to. Since, a memory write is taking
 place, the memory *i_writEnable* signal is asserted.
 
@@ -123,3 +123,31 @@ Below is a schematic of the state elements and combinational logic connected to
 implement the LW instruction.
 
 ![sw schematic](pics/sw_sampleProgram_full.png)
+
+### R-Type
+
+![rtype](pics/rtype.png)
+![rtype_funct3](pics/rtype_funct3_decode.png)
+
+The R-type instruction is used for arithmetic and logical operations. The
+instruction takes the form rd <= rs1 `op` rs2. The funct7 and funct3 fields select
+the type of operation.
+
+The rs1 and rs2 fields of the instruction are connected to the *i_readAddressX*
+ports of the register file and the ALU performs an arithmentic/logical operation
+on the data read from the registers. A multiplexer and a select signal *o_aluInputB*,
+is used to select the input of *i_b* port of the ALU. For lw and sw instructions,
+the output of the immediate extend block is selected. For R-type instructions,
+the output of the register file, *o_readData2*, is selected.
+
+As the output of the ALU has to be written to the register file (connected to the
+*i_writeData* port) another multiplexer with a control signal, *resultSrc*, is
+used. For R-Type instructions, the signal is deasserted and the ALU result is
+selected. For I-Type instructions, the signal is asserted the output of the data
+memory is selected. The output selected for S-Type instructions doesn't matter
+since no register write takes place.
+
+Below is a schematic of the state elements and combinational logic connected to
+implement the R-Type instruction.
+
+![rtype schematic](pics/rtype_sampleProgram_full.png)
