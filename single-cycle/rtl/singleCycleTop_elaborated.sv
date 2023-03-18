@@ -29,7 +29,7 @@ module singleCycleTop_elaborated
   // Decode the operand to determine the state elements and ALU control signals.
 
   logic       regWriteEn;
-  logic       memWriteEnable;
+  logic       memWriteEn;
   logic       aluInputBSel;
   logic [3:0] aluLogicOperation;
   logic       regWriteDataSel;
@@ -151,7 +151,7 @@ module singleCycleTop_elaborated
 
   , .i_rwAddress   (dataAddress)
 
-  , .i_writeEnable (memWriteEnable)
+  , .i_writeEnable (memWriteEn)
   , .i_writeData   (regReadData2)
 
   , .o_readData    (dataFromMemory)
