@@ -14,12 +14,16 @@ module singleCycleTop_elaborated
   logic [4:0]  rs1;
   logic [4:0]  rs2;
   logic [4:0]  rd;
+  logic [6:0]  funct7;
+  logic [2:0]  funct3;
 
   // Extract fields from instruction.
   always_comb operand = instruction[6:0];
   always_comb rs1     = instruction[19:15];
   always_comb rs2     = instruction[24:20];
   always_comb rd      = instruction[11:7];
+  always_comb funct3  = instruction[14:12];
+  always_comb funct7  = instruction[31:25];
 
   // {{{ Main controller
   // Decode the operand to determine the state elements and ALU control signals.
@@ -31,6 +35,8 @@ module singleCycleTop_elaborated
 
   controller u_controller
   ( .i_operand           (operand)
+  , .i_funct3            (funct3)
+  , .i_funct7bit5        (funct7[5])
 
   , .o_regWrite          (regWrite)          // Write to register file.
   , .o_aluInputB         (aluInputBSel)      // Select the ALU input B.
