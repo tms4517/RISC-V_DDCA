@@ -88,6 +88,8 @@ module singleCycleTop_elaborated
   //         write to rd, rd <= mem[rs1 + immediate].
   // S-Type: Find the base address of the data memory stored in rs1 and read rs2
   //         which contains the data to write to memory.
+  // R-Type: Read rs1 and rs2 and store the result of the logical/arithmetic
+  //         operation on them in rd. rd <= rs1 op rs2.
   registerFile u_registerFile
   ( .i_clk
 
