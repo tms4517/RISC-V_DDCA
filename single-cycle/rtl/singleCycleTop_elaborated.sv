@@ -1,5 +1,7 @@
 `default_nettype none
 
+import pa_riscv::*;
+
 module singleCycleTop_elaborated
   ( input var logic i_clk
   , input var logic i_srst
@@ -51,6 +53,7 @@ module singleCycleTop_elaborated
   // {{{ PC
 
   logic [31:0] nextPc;
+  logic [31:0] branchAddress;
 
   // Next address in the instruction memory.
   always_comb nextPc = (operand == B) ? branchAddress : pc + 32'h4;
