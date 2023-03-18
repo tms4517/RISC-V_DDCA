@@ -11,6 +11,7 @@ module controller
   , output var logic       o_aluInputBSel
   , output var logic [3:0] o_aluLogicOperation
   , output var logic       o_memWrite
+  , output var logic       o_regWriteDataSel
   );
 
   // Decode operand to determine if the instruction involves a register write.
@@ -29,7 +30,6 @@ module controller
       R:       o_aluInputBSel = '0; // Select o_readData2 from register file.
       default: o_aluInputBSel = 'x;
     endcase
-
 
   logic [3:0] rTypeOperation;
 
@@ -53,6 +53,16 @@ module controller
       I:       o_memWrite = '0;
       S:       o_memWrite = '1;
       default: o_memWrite = 'x;
+    endcase
+
+  // Decode operand to determine if the input to the write data port of the
+  // register file should come from the data memory or output from the ALU.
+  always_comb
+    case (i_operand)
+      I:       o_regWriteDataSel = '1; // Select the output from data memory.
+      S:       o_regWriteDataSel = '1; // Doesn't matter.
+      R:       o_regWriteDataSel = '0; // Select the output from the ALU.
+      default: o_regWriteDataSel = 'x;
     endcase
 
   endmodule

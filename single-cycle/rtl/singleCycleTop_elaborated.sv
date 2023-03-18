@@ -32,6 +32,7 @@ module singleCycleTop_elaborated
   logic       memWrite;
   logic       aluInputBSel;
   logic [3:0] aluLogicOperation;
+  logic       regWriteDataSel;
 
   controller u_controller
   ( .i_operand           (operand)
@@ -42,6 +43,7 @@ module singleCycleTop_elaborated
   , .o_aluInputBSel      (aluInputBSel)      // Select the ALU input B.
   , .o_aluLogicOperation (aluLogicOperation) // Select the ALU logical operation.
   , .o_memWrite          (memWrite)          // Write to memory.
+  , .o_regWriteDataSel   (regWriteDataSel)   // Select data to write to register file.
   );
 
   // }}} Main controller
@@ -89,6 +91,10 @@ module singleCycleTop_elaborated
 
   logic [31:0] baseAddress;
   logic [31:0] regReadData2;
+  logic [31:0] regWriteData;
+
+  // Depending on the instruction type, select the data to be written to reg file.
+  always_comb regWriteData = regWriteDataSel ? dataFromMemory : dataAddress;
 
   // I-Type: Find the base address of the data memory stored in rs1 and
   //         write to rd, rd <= mem[rs1 + immediate].
