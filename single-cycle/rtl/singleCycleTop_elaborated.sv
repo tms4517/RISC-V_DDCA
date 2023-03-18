@@ -26,12 +26,14 @@ module singleCycleTop_elaborated
 
   logic       regWrite;
   logic       memWrite;
+  logic       aluInputBSel;
   logic [1:0] aluControl;
 
   controller u_controller
   ( .i_operand         (operand)
 
   , .o_regWrite        (regWrite)        // Write to register file.
+  , .o_aluInputB       (aluInputBSel)    // Select the ALU input B.
   , .o_aluControl      (aluControl)      // ALU logical operation.
   , .o_memWrite        (memWrite)        // Write to memory.
   );
@@ -80,7 +82,7 @@ module singleCycleTop_elaborated
   // {{{ Register File
 
   logic [31:0] baseAddress;
-  logic [31:0] dataToMemory;
+  logic [31:0] regReadData2;
 
   // I-Type: Find the base address of the data memory stored in rs1 and
   //         write to rd, rd <= mem[rs1 + immediate].
@@ -97,7 +99,7 @@ module singleCycleTop_elaborated
   , .i_writeData    (dataFromMemory)
 
   , .o_readData1    (baseAddress)
-  , .o_readData2    (dataToMemory)
+  , .o_readData2    (regReadData2)
   );
 
   // }}} Register File
@@ -106,10 +108,13 @@ module singleCycleTop_elaborated
 
   logic [31:0] dataAddress;
 
+  always_comb aluInputB = aluInputBSel ? addressOffset : regReadData2;
+
   // I-Type: Calculate the base address of data memory: rs1 + immediate.
+  // R-Type: Perform logical/arithmetic operation: rs1 op rs2
   alu u_alu
   ( .i_a          (baseAddress)
-  , .i_b          (addressOffset)
+  , .i_b          (aluInputB)
 
   , .i_aluControl (aluControl)
 
@@ -130,7 +135,7 @@ module singleCycleTop_elaborated
   , .i_rwAddress   (dataAddress)
 
   , .i_writeEnable (memWrite)
-  , .i_writeData   (dataToMemory)
+  , .i_writeData   (regReadData2)
 
   , .o_readData    (dataFromMemory)
   );
