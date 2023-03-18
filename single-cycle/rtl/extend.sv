@@ -16,6 +16,9 @@ module extend
                 {{20{i_instruction[31]}}, i_instruction[31:20]};
       S:       o_immediateExtended =
                 {{20{i_instruction[31]}}, i_instruction[31:25], i_instruction[11:7]};
+      B:       o_immediateExtended =
+                {{20{i_instruction[31]}}, i_instruction[7], i_instruction[30:25],
+                  i_instruction[11:8], 1'b0};
       default: o_immediateExtended = 32'bx;
     endcase
 
