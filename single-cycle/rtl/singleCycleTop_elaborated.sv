@@ -63,6 +63,8 @@ module singleCycleTop_elaborated
   , .o_pc     (pc)
   );
 
+  always_comb branchAddress = pc + immediateExtended;
+
   // }}} PC
 
   // {{{ Instruction Memory
@@ -76,13 +78,20 @@ module singleCycleTop_elaborated
 
   // {{{ Extend Immediate
 
-  logic [31:0] addressOffset;
+  logic [31:0] immediateExtended;
 
   // Extract the immediate from the instruction and sign extend to 32 bits.
+  // I-Type: immediateExtended is the address offset of the base address from
+  //         which data is read from memory.
+  // S-Type: immediateExtended is the address offset of the base address to which
+  //         data is written to.
+  // R-Type: Not used.
+  // B-Type: immediateExtended is the value the PC is incremented by to calculate
+  //         the new branch address.
   extend u_extend
   ( .i_instruction       (instruction)
 
-  , .o_immediateExtended (addressOffset)
+  , .o_immediateExtended (immediateExtended)
   );
 
   // }}} Extend Immediate
@@ -123,7 +132,7 @@ module singleCycleTop_elaborated
   logic [31:0] dataAddress;
   logic [31:0] aluInputB;
 
-  always_comb aluInputB = aluInputBSel ? addressOffset : regReadData2;
+  always_comb aluInputB = aluInputBSel ? immediateExtended : regReadData2;
 
   // I-Type: Calculate the address of data memory: rs1 + immediate.
   // S-Type: Calculate the address of data memory: rs1 + immediate.
