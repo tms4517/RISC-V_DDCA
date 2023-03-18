@@ -53,7 +53,7 @@ module singleCycleTop_elaborated
   logic [31:0] nextPc;
 
   // Next address in the instruction memory.
-  always_comb nextPc = pc + 32'h4;
+  always_comb nextPc = (operand == B) ? branchAddress : pc + 32'h4;
 
   pc u_pc
   ( .i_clk
