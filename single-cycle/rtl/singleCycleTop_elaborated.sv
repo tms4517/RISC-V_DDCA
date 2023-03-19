@@ -112,9 +112,9 @@ module singleCycleTop_elaborated
   // Depending on the instruction type, select the data to be written to reg file.
   always_comb regWriteData = regWriteDataSel ? dataFromMemory : dataAddress;
 
-  // I-Type: Find the base address of the data memory stored in rs1 and
+  // I-Type: Read the base address of the data memory stored in rs1 and
   //         write to rd, rd <= mem[rs1 + immediate].
-  // S-Type: Find the base address of the data memory stored in rs1 and read rs2
+  // S-Type: Read the base address of the data memory stored in rs1 and read rs2
   //         which contains the data to write to memory.
   // R-Type: Read rs1 and rs2 and store the result of the logical/arithmetic
   //         operation on them in rd. rd <= rs1 op rs2.
