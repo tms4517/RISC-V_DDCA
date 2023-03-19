@@ -35,12 +35,16 @@ module singleCycleTop_elaborated
   logic       aluInputBSel;
   logic [3:0] aluLogicOperation;
   logic       regWriteDataSel;
+  logic       branchCondition;
 
   controller u_controller
   ( .i_operand           (operand)
   , .i_funct3            (funct3)
   , .i_funct7bit5        (funct7[5])
 
+  , .i_zeroFlag          (zeroFlag)
+
+  , .o_branchCondition   (branchCondition)
   , .o_regWriteEn        (regWriteEn)        // Enable write to register file.
   , .o_aluInputBSel      (aluInputBSel)      // Select the ALU input B.
   , .o_aluLogicOperation (aluLogicOperation) // Select the ALU logical operation.
@@ -54,11 +58,6 @@ module singleCycleTop_elaborated
 
   logic [31:0] nextPc;
   logic [31:0] branchAddress;
-  logic        branchCondition;
-
-  // Branch condition is met if there is a branch instruction and the zero flag
-  // is asserted.
-  always_comb branchCondition = (operand == B) && zeroFlag;
 
   always_comb nextPc = branchCondition ? branchAddress : pc + 32'h4;
 

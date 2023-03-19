@@ -7,12 +7,19 @@ module controller
   , input  var logic [2:0] i_funct3
   , input  var logic       i_funct7bit5
 
+  , input var logic        i_zeroFlag
+
+  , output var logic       o_branchCondition
   , output var logic       o_regWriteEn
   , output var logic       o_aluInputBSel
   , output var logic [3:0] o_aluLogicOperation
   , output var logic       o_memWriteEn
   , output var logic       o_regWriteDataSel
   );
+
+  // Branch condition is met if there is a branch instruction and the zero flag
+  // is asserted.
+  always_comb o_branchCondition = (i_operand == B) && i_zeroFlag;
 
   // Decode operand to determine if the instruction involves a register write.
   always_comb
