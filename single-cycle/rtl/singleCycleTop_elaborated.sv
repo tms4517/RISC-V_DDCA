@@ -105,7 +105,7 @@ module singleCycleTop_elaborated
 
   // {{{ Register File
 
-  logic [31:0] baseAddress;
+  logic [31:0] regReadData1;
   logic [31:0] regReadData2;
   logic [31:0] regWriteData;
 
@@ -129,7 +129,7 @@ module singleCycleTop_elaborated
   , .i_writeAddress (rd)
   , .i_writeData    (regWriteData)
 
-  , .o_readData1    (baseAddress)
+  , .o_readData1    (regReadData1)
   , .o_readData2    (regReadData2)
   );
 
@@ -143,12 +143,14 @@ module singleCycleTop_elaborated
 
   always_comb aluInputB = aluInputBSel ? immediateExtended : regReadData2;
 
-  // I-Type: Calculate the address of data memory: rs1 + immediate.
-  // S-Type: Calculate the address of data memory: rs1 + immediate.
+  // I-Type: Calculate the data memory address:
+  //         base address (rs1) + address offset (immediate).
+  // S-Type: Calculate the data memory address:
+  //         base address (rs1) + address offset (immediate).
   // R-Type: Perform logical/arithmetic operation: rs1 op rs2
   // B-Type: Subtract, rs1 - rs2 to determine if equal. Result is not used.
   alu u_alu
-  ( .i_a                 (baseAddress)
+  ( .i_a                 (regReadData1)
   , .i_b                 (aluInputB)
   , .i_aluLogicOperation (aluLogicOperation)
 
