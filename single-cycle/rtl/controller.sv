@@ -24,11 +24,14 @@ module controller
     endcase
 
   // Decode operand to determine the input of the ALU i_b port.
+  // 1 -> Select o_immediateExtended from extend module.
+  // 0 -> Select o_readData2 from register file.
   always_comb
     case (i_operand)
-      I:       o_aluInputBSel = '1; // Select o_immediateExtended from extend module.
+      I:       o_aluInputBSel = '1;
       S:       o_aluInputBSel = '1;
-      R:       o_aluInputBSel = '0; // Select o_readData2 from register file.
+      R:       o_aluInputBSel = '0;
+      B:       o_aluInputBSel = '0;
       default: o_aluInputBSel = 'x;
     endcase
 
@@ -42,8 +45,8 @@ module controller
   // the instruction.
   always_comb
     case (i_operand)
-      I:       o_aluLogicOperation = 4'b0000;
-      S:       o_aluLogicOperation = 4'b0000;
+      I:       o_aluLogicOperation = ADD;
+      S:       o_aluLogicOperation = ADD;
       R:       o_aluLogicOperation = rTypeOperation;
       B:       o_aluLogicOperation = SUB;
       default: o_aluLogicOperation = 4'bxxxx;
