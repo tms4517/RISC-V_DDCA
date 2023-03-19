@@ -26,6 +26,7 @@ module controller
     case (i_operand)
       I:       o_regWriteEn = '1;
       S:       o_regWriteEn = '0;
+      R:       o_regWriteEn = '1;
       B:       o_regWriteEn = '0;
       default: o_regWriteEn = 'x;
     endcase
@@ -64,6 +65,7 @@ module controller
     case (i_operand)
       I:       o_memWriteEn = '0;
       S:       o_memWriteEn = '1;
+      R:       o_memWriteEn = '0;
       B:       o_memWriteEn = '0;
       default: o_memWriteEn = 'x;
     endcase
