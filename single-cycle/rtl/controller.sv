@@ -45,7 +45,7 @@ module controller
       I:       o_aluLogicOperation = 4'b0000;
       S:       o_aluLogicOperation = 4'b0000;
       R:       o_aluLogicOperation = rTypeOperation;
-      B:       o_aluLogicOperation = 4'b0000;
+      B:       o_aluLogicOperation = SUB;
       default: o_aluLogicOperation = 4'bxxxx;
     endcase
 

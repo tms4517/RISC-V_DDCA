@@ -54,10 +54,13 @@ module singleCycleTop_elaborated
 
   logic [31:0] nextPc;
   logic [31:0] branchAddress;
+  logic        branchCondition;
 
-  // Next address in the instruction memory is dependent on whether there is a
-  // branch instruction and the zero flag is set.
-  always_comb nextPc = (operand == B) ? branchAddress : pc + 32'h4;
+  // Branch condition is met if there is a branch instruction and the zero flag
+  // is asserted.
+  always_comb branchCondition = (operand == B) && zeroFlag;
+
+  always_comb nextPc = branchCondition ? branchAddress : pc + 32'h4;
 
   pc u_pc
   ( .i_clk
@@ -136,6 +139,7 @@ module singleCycleTop_elaborated
 
   logic [31:0] dataAddress;
   logic [31:0] aluInputB;
+  logic        zeroFlag;
 
   always_comb aluInputB = aluInputBSel ? immediateExtended : regReadData2;
 
@@ -146,10 +150,11 @@ module singleCycleTop_elaborated
   alu u_alu
   ( .i_a                 (baseAddress)
   , .i_b                 (aluInputB)
-
   , .i_aluLogicOperation (aluLogicOperation)
 
   , .o_result            (dataAddress)
+
+  , .o_zeroFlag           (zeroFlag)
   );
 
   // }}} ALU
