@@ -151,3 +151,25 @@ Below is a schematic of the state elements and combinational logic connected to
 implement the R-Type instruction.
 
 ![rtype schematic](pics/rtype_sampleProgram_full.png)
+
+### B-Type
+
+![rtype](pics/btype.png)
+
+The B-Type instruction - BEQ (branch if equal) compares two registers rs1 and rs2.
+If they are equal, the PC points to the *branchAddress*.
+
+The branch offset is a 13-bit signed immediate stored in the 12-bit immediate
+field of the B-type instruction. It is sign extended and added to the PC to
+calculate the *branchAddress*.
+
+The rs1 and rs2 ports are connected to the register file *i_readAddressX* ports
+and the values read from the registers are subtracted from each other by the ALU.
+If they are equal, the ALU *zeroFlag* will be asserted and this selects the
+*branchAddress* as the next PC value.
+
+Below is a schematic of the state elements and combinational logic connected to
+implement the BEQ instruction.
+
+![btype schematic](pics/btype_sampleProgram_full.png)
+
