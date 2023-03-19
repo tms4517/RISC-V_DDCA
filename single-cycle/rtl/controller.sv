@@ -19,6 +19,7 @@ module controller
     case (i_operand)
       I:       o_regWriteEn = '1;
       S:       o_regWriteEn = '0;
+      B:       o_regWriteEn = '0;
       default: o_regWriteEn = 'x;
     endcase
 
@@ -44,6 +45,7 @@ module controller
       I:       o_aluLogicOperation = 4'b0000;
       S:       o_aluLogicOperation = 4'b0000;
       R:       o_aluLogicOperation = rTypeOperation;
+      B:       o_aluLogicOperation = 4'b0000; // Doesnt matter.
       default: o_aluLogicOperation = 4'bxxxx;
     endcase
 
@@ -52,6 +54,7 @@ module controller
     case (i_operand)
       I:       o_memWriteEn = '0;
       S:       o_memWriteEn = '1;
+      B:       o_memWriteEn = '0;
       default: o_memWriteEn = 'x;
     endcase
 
@@ -62,6 +65,7 @@ module controller
       I:       o_regWriteDataSel = '1; // Select the output from data memory.
       S:       o_regWriteDataSel = '1; // Doesn't matter.
       R:       o_regWriteDataSel = '0; // Select the output from the ALU.
+      B:       o_regWriteDataSel = '0; // Doesn't matter.
       default: o_regWriteDataSel = 'x;
     endcase
 
