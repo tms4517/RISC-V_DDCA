@@ -45,7 +45,7 @@ module controller
       I:       o_aluLogicOperation = 4'b0000;
       S:       o_aluLogicOperation = 4'b0000;
       R:       o_aluLogicOperation = rTypeOperation;
-      B:       o_aluLogicOperation = 4'b0000; // Doesnt matter.
+      B:       o_aluLogicOperation = 4'b0000;
       default: o_aluLogicOperation = 4'bxxxx;
     endcase
 
@@ -63,9 +63,9 @@ module controller
   always_comb
     case (i_operand)
       I:       o_regWriteDataSel = '1; // Select the output from data memory.
-      S:       o_regWriteDataSel = '1; // Doesn't matter.
+      S:       o_regWriteDataSel = '1; // Doesn't matter. No write takes place.
       R:       o_regWriteDataSel = '0; // Select the output from the ALU.
-      B:       o_regWriteDataSel = '0; // Doesn't matter.
+      B:       o_regWriteDataSel = '0; // Doesn't matter. No write takes place.
       default: o_regWriteDataSel = 'x;
     endcase
 

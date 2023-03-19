@@ -55,7 +55,8 @@ module singleCycleTop_elaborated
   logic [31:0] nextPc;
   logic [31:0] branchAddress;
 
-  // Next address in the instruction memory.
+  // Next address in the instruction memory is dependent on whether there is a
+  // branch instruction and the zero flag is set.
   always_comb nextPc = (operand == B) ? branchAddress : pc + 32'h4;
 
   pc u_pc
@@ -114,6 +115,7 @@ module singleCycleTop_elaborated
   //         which contains the data to write to memory.
   // R-Type: Read rs1 and rs2 and store the result of the logical/arithmetic
   //         operation on them in rd. rd <= rs1 op rs2.
+  // B-Type: Read rs1 and rs2. No write takes place.
   registerFile u_registerFile
   ( .i_clk
 
@@ -140,6 +142,7 @@ module singleCycleTop_elaborated
   // I-Type: Calculate the address of data memory: rs1 + immediate.
   // S-Type: Calculate the address of data memory: rs1 + immediate.
   // R-Type: Perform logical/arithmetic operation: rs1 op rs2
+  // B-Type: Subtract, rs1 - rs2 to determine if equal. Result is not used.
   alu u_alu
   ( .i_a                 (baseAddress)
   , .i_b                 (aluInputB)
@@ -158,6 +161,7 @@ module singleCycleTop_elaborated
   // I-Type: Output data stored in location: mem[rs1 + immediate]
   // S-Type: Store data in memory location given by rs2 <= mem[rs1 + immediate].
   // R-Type: No data gets stored in memory.
+  // B-Type: No data gets stored in memory. Read data is ignored.
   dataMemory u_dataMemory
   ( .i_clk
 
