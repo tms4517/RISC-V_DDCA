@@ -49,12 +49,9 @@ memory element to the *readData* port.
 
 ### Controller
 
-A module consisting of a MUXes is used to decode the operand to determine the value
-of control signals used to configure the state elements:
-- A read/write from the register file is taking place.
-- A read/write from the data memory is taking place.
-- ALU logical operation.
-- Which bits of the instruction contain the immediate field bits.
+A module consisting of a MUXes is used to decode the instruction to assign the
+value of control signals/select lines of combinational logic that are used to
+control the data-path.
 
 ## Core Instructions
 
