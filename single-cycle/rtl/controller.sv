@@ -28,6 +28,7 @@ module controller
       SW:         o_regWriteEn = '0;
       R_TYPE_ALU: o_regWriteEn = '1;
       B_TYPE:     o_regWriteEn = '0;
+      I_TYPE_ALU: o_regWriteEn = '1;
       default:    o_regWriteEn = 'x;
     endcase
 
@@ -40,14 +41,19 @@ module controller
       SW:         o_aluInputBSel = '1;
       R_TYPE_ALU: o_aluInputBSel = '0;
       B_TYPE:     o_aluInputBSel = '0;
+      I_TYPE_ALU: o_aluInputBSel = '1;
       default:    o_aluInputBSel = 'x;
     endcase
 
   logic [3:0] rTypeOperation;
+  logic [3:0] iTypeOperation;
 
   // Bit 5 of funct7 and funct3 are used for R-Type instructions to determine
   // the operation.
   always_comb rTypeOperation = {i_funct7bit5, i_funct3};
+
+  // Only funct3 is used for I-Type ALU instructions to determine the operation.
+  always_comb iTypeOperation = {1'b0, i_funct3};
 
   // Decode operand to determine the logical operation performed by the ALU for
   // the instruction.
@@ -57,6 +63,7 @@ module controller
       SW:         o_aluLogicOperation = ADD;
       R_TYPE_ALU: o_aluLogicOperation = rTypeOperation;
       B_TYPE:     o_aluLogicOperation = SUB;
+      I_TYPE_ALU: o_aluLogicOperation = iTypeOperation;
       default:    o_aluLogicOperation = 4'bxxxx;
     endcase
 
@@ -67,6 +74,7 @@ module controller
       SW:         o_memWriteEn = '1;
       R_TYPE_ALU: o_memWriteEn = '0;
       B_TYPE:     o_memWriteEn = '0;
+      I_TYPE_ALU: o_memWriteEn = '0;
       default:    o_memWriteEn = 'x;
     endcase
 
@@ -80,6 +88,7 @@ module controller
       SW:         o_regWriteDataSel = '1;
       R_TYPE_ALU: o_regWriteDataSel = '0;
       B_TYPE:     o_regWriteDataSel = '0;
+      I_TYPE_ALU: o_regWriteDataSel = '0; // Select the output from the ALU.
       default:    o_regWriteDataSel = 'x;
     endcase
 

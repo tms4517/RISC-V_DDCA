@@ -93,6 +93,7 @@ module singleCycleTop_elaborated
   // R-Type ALU: Not used.
   // B-Type:     immediateExtended is the value the PC is incremented by to
   //             calculate the new branch address.
+  // I-Type ALU: immediateExtended is the second input to the ALU.
   extend u_extend
   ( .i_instruction       (instruction)
 
@@ -108,7 +109,7 @@ module singleCycleTop_elaborated
   logic [31:0] regWriteData;
 
   // Depending on the instruction type, select the data to be written to reg file.
-  always_comb regWriteData = regWriteDataSel ? dataFromMemory : dataAddress;
+  always_comb regWriteData = regWriteDataSel ? dataFromMemory : aluOutput;
 
   // LW:         Read the base address of the data memory stored in rs1 and
   //             write to rd, rd <= mem[rs1 + immediate].
@@ -117,6 +118,8 @@ module singleCycleTop_elaborated
   // R-Type ALU: Read rs1 and rs2 and store the result of the logical/arithmetic
   //             operation on them in rd. rd <= rs1 op rs2.
   // B-Type:     Read rs1 and rs2. No write takes place.
+  // I-Type ALU: A logical operation is performed on the data read from rs1 and
+  //             the immediate. The result is stored in rd. rs2 output is not used.
   registerFile u_registerFile
   ( .i_clk
 
@@ -135,7 +138,7 @@ module singleCycleTop_elaborated
 
   // {{{ ALU
 
-  logic [31:0] dataAddress;
+  logic [31:0] aluOutput;
   logic [31:0] aluInputB;
   logic        zeroFlag;
 
@@ -147,12 +150,13 @@ module singleCycleTop_elaborated
   //             base address (rs1) + address offset (immediate).
   // R-Type ALU: Perform logical/arithmetic operation: rs1 op rs2
   // B-Type:     Subtract, rs1 - rs2 to determine if equal. Result is not used.
+  // I-Type ALU: Perform logical/arithmetic operation: rs1 op immediate
   alu u_alu
   ( .i_a                 (regReadData1)
   , .i_b                 (aluInputB)
   , .i_aluLogicOperation (aluLogicOperation)
 
-  , .o_result            (dataAddress)
+  , .o_result            (aluOutput)
 
   , .o_zeroFlag          (zeroFlag)
   );
@@ -167,10 +171,11 @@ module singleCycleTop_elaborated
   // SW:         Store data in memory location given by rs2 <= mem[rs1 + immediate].
   // R-Type ALU: No data gets stored in memory.
   // B-Type:     No data gets stored in memory. Read data is ignored.
+  // I-Type ALU: No data gets stored in memory.
   dataMemory u_dataMemory
   ( .i_clk
 
-  , .i_rwAddress   (dataAddress)
+  , .i_rwAddress   (aluOutput)
 
   , .i_writeEnable (memWriteEn)
   , .i_writeData   (regReadData2)
