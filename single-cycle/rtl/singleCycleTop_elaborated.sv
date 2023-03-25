@@ -87,13 +87,13 @@ module singleCycleTop_elaborated
   logic [31:0] immediateExtended;
 
   // Extract the immediate from the instruction and sign extend to 32 bits.
-  // I-Type: immediateExtended is the address offset of the base address from
-  //         which data is read from memory.
-  // S-Type: immediateExtended is the address offset of the base address to which
-  //         data is written to.
-  // R-Type: Not used.
-  // B-Type: immediateExtended is the value the PC is incremented by to calculate
-  //         the new branch address.
+  // LW:         immediateExtended is the address offset of the base address from
+  //             which data is read from memory.
+  // SW:         immediateExtended is the address offset of the base address to
+  //             which data is written to.
+  // R-Type ALU: Not used.
+  // B-Type:     immediateExtended is the value the PC is incremented by to
+  //             calculate the new branch address.
   extend u_extend
   ( .i_instruction       (instruction)
 
@@ -111,13 +111,13 @@ module singleCycleTop_elaborated
   // Depending on the instruction type, select the data to be written to reg file.
   always_comb regWriteData = regWriteDataSel ? dataFromMemory : dataAddress;
 
-  // I-Type: Read the base address of the data memory stored in rs1 and
-  //         write to rd, rd <= mem[rs1 + immediate].
-  // S-Type: Read the base address of the data memory stored in rs1 and read rs2
-  //         which contains the data to write to memory.
-  // R-Type: Read rs1 and rs2 and store the result of the logical/arithmetic
-  //         operation on them in rd. rd <= rs1 op rs2.
-  // B-Type: Read rs1 and rs2. No write takes place.
+  // LW:         Read the base address of the data memory stored in rs1 and
+  //             write to rd, rd <= mem[rs1 + immediate].
+  // SW:         Read the base address of the data memory stored in rs1 and read
+  //             rs2 which contains the data to write to memory.
+  // R-Type ALU: Read rs1 and rs2 and store the result of the logical/arithmetic
+  //             operation on them in rd. rd <= rs1 op rs2.
+  // B-Type:     Read rs1 and rs2. No write takes place.
   registerFile u_registerFile
   ( .i_clk
 
@@ -142,12 +142,12 @@ module singleCycleTop_elaborated
 
   always_comb aluInputB = aluInputBSel ? immediateExtended : regReadData2;
 
-  // I-Type: Calculate the data memory address:
-  //         base address (rs1) + address offset (immediate).
-  // S-Type: Calculate the data memory address:
-  //         base address (rs1) + address offset (immediate).
-  // R-Type: Perform logical/arithmetic operation: rs1 op rs2
-  // B-Type: Subtract, rs1 - rs2 to determine if equal. Result is not used.
+  // LW:         Calculate the data memory address:
+  //             base address (rs1) + address offset (immediate).
+  // SW:         Calculate the data memory address:
+  //             base address (rs1) + address offset (immediate).
+  // R-Type ALU: Perform logical/arithmetic operation: rs1 op rs2
+  // B-Type:     Subtract, rs1 - rs2 to determine if equal. Result is not used.
   alu u_alu
   ( .i_a                 (regReadData1)
   , .i_b                 (aluInputB)
@@ -164,10 +164,10 @@ module singleCycleTop_elaborated
 
   logic [31:0] dataFromMemory;
 
-  // I-Type: Output data stored in location: mem[rs1 + immediate]
-  // S-Type: Store data in memory location given by rs2 <= mem[rs1 + immediate].
-  // R-Type: No data gets stored in memory.
-  // B-Type: No data gets stored in memory. Read data is ignored.
+  // LW:         Output data stored in location: mem[rs1 + immediate]
+  // SW:         Store data in memory location given by rs2 <= mem[rs1 + immediate].
+  // R-Type ALU: No data gets stored in memory.
+  // B-Type:     No data gets stored in memory. Read data is ignored.
   dataMemory u_dataMemory
   ( .i_clk
 

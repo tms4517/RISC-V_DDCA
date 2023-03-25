@@ -24,11 +24,11 @@ module controller
   // Decode operand to determine if the instruction involves a register write.
   always_comb
     case (i_operand)
-      I:       o_regWriteEn = '1;
-      S:       o_regWriteEn = '0;
-      R:       o_regWriteEn = '1;
-      B:       o_regWriteEn = '0;
-      default: o_regWriteEn = 'x;
+      LW:         o_regWriteEn = '1;
+      SW:         o_regWriteEn = '0;
+      R_TYPE_ALU: o_regWriteEn = '1;
+      B_TYPE:     o_regWriteEn = '0;
+      default:    o_regWriteEn = 'x;
     endcase
 
   // Decode operand to determine the input of the ALU i_b port.
@@ -36,11 +36,11 @@ module controller
   // 0 -> Select o_readData2 from register file.
   always_comb
     case (i_operand)
-      I:       o_aluInputBSel = '1;
-      S:       o_aluInputBSel = '1;
-      R:       o_aluInputBSel = '0;
-      B:       o_aluInputBSel = '0;
-      default: o_aluInputBSel = 'x;
+      LW:         o_aluInputBSel = '1;
+      SW:         o_aluInputBSel = '1;
+      R_TYPE_ALU: o_aluInputBSel = '0;
+      B_TYPE:     o_aluInputBSel = '0;
+      default:    o_aluInputBSel = 'x;
     endcase
 
   logic [3:0] rTypeOperation;
@@ -53,32 +53,32 @@ module controller
   // the instruction.
   always_comb
     case (i_operand)
-      I:       o_aluLogicOperation = ADD;
-      S:       o_aluLogicOperation = ADD;
-      R:       o_aluLogicOperation = rTypeOperation;
-      B:       o_aluLogicOperation = SUB;
-      default: o_aluLogicOperation = 4'bxxxx;
+      LW:         o_aluLogicOperation = ADD;
+      SW:         o_aluLogicOperation = ADD;
+      R_TYPE_ALU: o_aluLogicOperation = rTypeOperation;
+      B_TYPE:     o_aluLogicOperation = SUB;
+      default:    o_aluLogicOperation = 4'bxxxx;
     endcase
 
   // Decode operand to determine if the instruction involves a memory write.
   always_comb
     case (i_operand)
-      I:       o_memWriteEn = '0;
-      S:       o_memWriteEn = '1;
-      R:       o_memWriteEn = '0;
-      B:       o_memWriteEn = '0;
-      default: o_memWriteEn = 'x;
+      LW:         o_memWriteEn = '0;
+      SW:         o_memWriteEn = '1;
+      R_TYPE_ALU: o_memWriteEn = '0;
+      B_TYPE:     o_memWriteEn = '0;
+      default:    o_memWriteEn = 'x;
     endcase
 
   // Decode operand to determine if the input to the write data port of the
   // register file should come from the data memory or output from the ALU.
   always_comb
     case (i_operand)
-      I:       o_regWriteDataSel = '1; // Select the output from data memory.
-      S:       o_regWriteDataSel = '1; // Doesn't matter. No write takes place.
-      R:       o_regWriteDataSel = '0; // Select the output from the ALU.
-      B:       o_regWriteDataSel = '0; // Doesn't matter. No write takes place.
-      default: o_regWriteDataSel = 'x;
+      LW:         o_regWriteDataSel = '1; // Select the output from data memory.
+      SW:         o_regWriteDataSel = '1; // Doesn't matter. No write takes place.
+      R_TYPE_ALU: o_regWriteDataSel = '0; // Select the output from the ALU.
+      B_TYPE:     o_regWriteDataSel = '0; // Doesn't matter. No write takes place.
+      default:    o_regWriteDataSel = 'x;
     endcase
 
   endmodule
