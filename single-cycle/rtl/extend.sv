@@ -21,6 +21,8 @@ module extend
       B_TYPE:     o_immediateExtended =
                   {{20{i_instruction[31]}}, i_instruction[7], i_instruction[30:25],
                   i_instruction[11:8], 1'b0};
+      I_TYPE_ALU: o_immediateExtended =
+                  {{20{i_instruction[31]}}, i_instruction[31:20]};
       default:    o_immediateExtended = 32'bx;
     endcase
 
