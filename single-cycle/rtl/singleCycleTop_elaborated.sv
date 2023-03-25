@@ -12,7 +12,6 @@ module singleCycleTop_elaborated
   logic [31:0] instruction;
 
   logic [6:0]  operand;
-  logic [11:0] immediate;
   logic [4:0]  rs1;
   logic [4:0]  rs2;
   logic [4:0]  rd;
@@ -159,7 +158,7 @@ module singleCycleTop_elaborated
 
   , .o_result            (aluOutput)
 
-  , .o_zeroFlag           (zeroFlag)
+  , .o_zeroFlag          (zeroFlag)
   );
 
   // }}} ALU
