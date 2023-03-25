@@ -170,3 +170,18 @@ implement the BEQ instruction.
 
 ![btype schematic](pics/btype_sampleProgram_full.png)
 
+### I-Type ALU
+
+![I_Type_ALU](pics/I_Type_ALU.png)
+
+The I-type ALU instructions perform arithmetic and logical operations. The
+instructions takes the form rd <= rs1 `op` immediate. The funct3 fields select
+the type of operation.
+
+The rs1 field is connected to the *i_readAddress1* ports of the register file and
+the data read is one of the inputs to the ALU. The other input to the ALU is the
+sign extended immediate field. The output of the ALU is connected to the
+*i_writeData* port of the register file which is addressed by the rd field.
+
+
+
