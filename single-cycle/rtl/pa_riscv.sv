@@ -6,10 +6,11 @@
 package pa_riscv;
 
   typedef enum logic [6:0]
-  { I = 7'b0000011
-  , S = 7'b0100011
-  , R = 7'b0110011
-  , B = 7'b1100011
+  { LW         = 7'b0000011
+  , SW         = 7'b0100011
+  , R_TYPE_ALU = 7'b0110011
+  , B_TYPE     = 7'b1100011
+  , I_TYPE_ALU = 7'b0010011
   } ty_INSTRUCTION_TYPE;
 
   typedef enum logic [3:0]
