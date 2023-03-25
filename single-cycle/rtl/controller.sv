@@ -19,7 +19,7 @@ module controller
 
   // Branch condition is met if there is a branch instruction and the zero flag
   // is asserted.
-  always_comb o_branchCondition = (i_operand == B) && i_zeroFlag;
+  always_comb o_branchCondition = (i_operand == B_TYPE) && i_zeroFlag;
 
   // Decode operand to determine if the instruction involves a register write.
   always_comb
@@ -72,12 +72,14 @@ module controller
 
   // Decode operand to determine if the input to the write data port of the
   // register file should come from the data memory or output from the ALU.
+  // 1 -> Select the output from data memory.
+  // 0 -> Select the output from the ALU.
   always_comb
     case (i_operand)
-      LW:         o_regWriteDataSel = '1; // Select the output from data memory.
-      SW:         o_regWriteDataSel = '1; // Doesn't matter. No write takes place.
-      R_TYPE_ALU: o_regWriteDataSel = '0; // Select the output from the ALU.
-      B_TYPE:     o_regWriteDataSel = '0; // Doesn't matter. No write takes place.
+      LW:         o_regWriteDataSel = '1;
+      SW:         o_regWriteDataSel = '1;
+      R_TYPE_ALU: o_regWriteDataSel = '0;
+      B_TYPE:     o_regWriteDataSel = '0;
       default:    o_regWriteDataSel = 'x;
     endcase
 
