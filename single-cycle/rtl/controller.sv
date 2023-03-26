@@ -25,11 +25,11 @@ module controller
   always_comb
     case (i_operand)
       LW:         o_regWriteEn = '1;
-      SW:         o_regWriteEn = '0;
-      R_TYPE_ALU: o_regWriteEn = '1;
-      B_TYPE:     o_regWriteEn = '0;
       I_TYPE_ALU: o_regWriteEn = '1;
       JAL:        o_regWriteEn = '1;
+      R_TYPE_ALU: o_regWriteEn = '1;
+      SW:         o_regWriteEn = '0;
+      B_TYPE:     o_regWriteEn = '0;
       default:    o_regWriteEn = 'x;
     endcase
 
@@ -40,9 +40,9 @@ module controller
     case (i_operand)
       LW:         o_aluInputBSel = '1;
       SW:         o_aluInputBSel = '1;
+      I_TYPE_ALU: o_aluInputBSel = '1;
       R_TYPE_ALU: o_aluInputBSel = '0;
       B_TYPE:     o_aluInputBSel = '0;
-      I_TYPE_ALU: o_aluInputBSel = '1;
       JAL:        o_aluInputBSel = '0;
       default:    o_aluInputBSel = 'x;
     endcase
@@ -63,18 +63,18 @@ module controller
     case (i_operand)
       LW:         o_aluLogicOperation = ADD;
       SW:         o_aluLogicOperation = ADD;
-      R_TYPE_ALU: o_aluLogicOperation = rTypeOperation;
-      B_TYPE:     o_aluLogicOperation = SUB;
-      I_TYPE_ALU: o_aluLogicOperation = iTypeOperation;
       JAL:        o_aluLogicOperation = ADD;
+      B_TYPE:     o_aluLogicOperation = SUB;
+      R_TYPE_ALU: o_aluLogicOperation = rTypeOperation;
+      I_TYPE_ALU: o_aluLogicOperation = iTypeOperation;
       default:    o_aluLogicOperation = 4'bxxxx;
     endcase
 
   // Decode operand to determine if the instruction involves a memory write.
   always_comb
     case (i_operand)
-      LW:         o_memWriteEn = '0;
       SW:         o_memWriteEn = '1;
+      LW:         o_memWriteEn = '0;
       R_TYPE_ALU: o_memWriteEn = '0;
       B_TYPE:     o_memWriteEn = '0;
       I_TYPE_ALU: o_memWriteEn = '0;
