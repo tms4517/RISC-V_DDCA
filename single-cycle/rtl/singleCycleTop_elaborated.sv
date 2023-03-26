@@ -57,8 +57,11 @@ module singleCycleTop_elaborated
 
   logic [31:0] nextPc;
   logic [31:0] branchAddress;
+  logic [31:0] pcPlus4;
 
-  always_comb nextPc = branchCondition ? branchAddress : pc + 32'h4;
+  always_comb pcPlus4 = pc + 32'h4;
+
+  always_comb nextPc = branchCondition ? branchAddress : pcPlus4;
 
   pc u_pc
   ( .i_clk
@@ -108,8 +111,14 @@ module singleCycleTop_elaborated
   logic [31:0] regReadData2;
   logic [31:0] regWriteData;
 
-  // Depending on the instruction type, select the data to be written to reg file.
-  always_comb regWriteData = regWriteDataSel ? dataFromMemory : aluOutput;
+  // Depending on the instruction, select the data to be written to reg file.
+  always_comb
+    case (regWriteDataSel)
+      DATAMEMORY: regWriteData = dataFromMemory;
+      ALU:        regWriteData = aluOutput;
+      PCPLUS4:    regWriteData = pcPlus4;
+      default:    regWriteData = 'x;
+    endcase
 
   // LW:         Read the base address of the data memory stored in rs1 and
   //             write to rd, rd <= mem[rs1 + immediate].
@@ -120,6 +129,7 @@ module singleCycleTop_elaborated
   // B-Type:     Read rs1 and rs2. No write takes place.
   // I-Type ALU: A logical operation is performed on the data read from rs1 and
   //             the immediate. The result is stored in rd. rs2 output is not used.
+  // JAL:        Store the link address in rd. rd <= pc + 4.
   registerFile u_registerFile
   ( .i_clk
 
