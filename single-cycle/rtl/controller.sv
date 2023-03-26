@@ -14,7 +14,7 @@ module controller
   , output var logic       o_aluInputBSel
   , output var logic [3:0] o_aluLogicOperation
   , output var logic       o_memWriteEn
-  , output var logic [2:0] o_regWriteDataSel
+  , output var logic [1:0] o_regWriteDataSel
   );
 
   // Branch condition is met if there is a branch instruction and the zero flag

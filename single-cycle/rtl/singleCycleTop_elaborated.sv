@@ -33,7 +33,7 @@ module singleCycleTop_elaborated
   logic       memWriteEn;
   logic       aluInputBSel;
   logic [3:0] aluLogicOperation;
-  logic       regWriteDataSel;
+  logic [1:0] regWriteDataSel;
   logic       branchCondition;
   logic       jump;
 

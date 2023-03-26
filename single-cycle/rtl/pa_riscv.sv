@@ -23,11 +23,11 @@ package pa_riscv;
   } ty_ALU_OP;
 
   // Select input to the write data port of the ALU.
-  typedef enum logic [2:0]
+  typedef enum logic [1:0]
   { DATAMEMORY = 2'b01
   , ALU        = 2'b00
   , PCPLUS4    = 2'b10
-  } ty_ALU_OP;
+  } ty_INPUT_TO_WRITEDATA;
 
 endpackage
 
