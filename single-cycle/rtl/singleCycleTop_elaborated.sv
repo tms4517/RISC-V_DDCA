@@ -35,6 +35,7 @@ module singleCycleTop_elaborated
   logic [3:0] aluLogicOperation;
   logic       regWriteDataSel;
   logic       branchCondition;
+  logic       jump;
 
   controller u_controller
   ( .i_operand           (operand)
@@ -56,12 +57,15 @@ module singleCycleTop_elaborated
   // {{{ PC
 
   logic [31:0] nextPc;
-  logic [31:0] branchAddress;
+  logic [31:0] pcTarget;
   logic [31:0] pcPlus4;
 
   always_comb pcPlus4 = pc + 32'h4;
 
-  always_comb nextPc = branchCondition ? branchAddress : pcPlus4;
+  always_comb pcTarget = pc + immediateExtended;
+
+  always_comb nextPc = (branchCondition || (operand == JAL)) ?
+                        pcTarget : pcPlus4;
 
   pc u_pc
   ( .i_clk
@@ -70,8 +74,6 @@ module singleCycleTop_elaborated
   , .i_nextPc (nextPc)
   , .o_pc     (pc)
   );
-
-  always_comb branchAddress = pc + immediateExtended;
 
   // }}} PC
 
