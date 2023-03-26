@@ -33,8 +33,9 @@ module singleCycleTop_elaborated
   logic       memWriteEn;
   logic       aluInputBSel;
   logic [3:0] aluLogicOperation;
-  logic       regWriteDataSel;
+  logic [1:0] regWriteDataSel;
   logic       branchCondition;
+  logic       jump;
 
   controller u_controller
   ( .i_operand           (operand)
@@ -56,9 +57,15 @@ module singleCycleTop_elaborated
   // {{{ PC
 
   logic [31:0] nextPc;
-  logic [31:0] branchAddress;
+  logic [31:0] pcTarget;
+  logic [31:0] pcPlus4;
 
-  always_comb nextPc = branchCondition ? branchAddress : pc + 32'h4;
+  always_comb pcPlus4 = pc + 32'h4;
+
+  always_comb pcTarget = pc + immediateExtended;
+
+  always_comb nextPc = (branchCondition || (operand == JAL)) ?
+                        pcTarget : pcPlus4;
 
   pc u_pc
   ( .i_clk
@@ -67,8 +74,6 @@ module singleCycleTop_elaborated
   , .i_nextPc (nextPc)
   , .o_pc     (pc)
   );
-
-  always_comb branchAddress = pc + immediateExtended;
 
   // }}} PC
 
@@ -94,6 +99,7 @@ module singleCycleTop_elaborated
   // B-Type:     immediateExtended is the value the PC is incremented by to
   //             calculate the new branch address.
   // I-Type ALU: immediateExtended is the second input to the ALU.
+  // JAL:        immediateExtended is added to the PC to get the jump address.
   extend u_extend
   ( .i_instruction       (instruction)
 
@@ -108,8 +114,14 @@ module singleCycleTop_elaborated
   logic [31:0] regReadData2;
   logic [31:0] regWriteData;
 
-  // Depending on the instruction type, select the data to be written to reg file.
-  always_comb regWriteData = regWriteDataSel ? dataFromMemory : aluOutput;
+  // Depending on the instruction, select the data to be written to reg file.
+  always_comb
+    case (regWriteDataSel)
+      DATAMEMORY: regWriteData = dataFromMemory;
+      ALU:        regWriteData = aluOutput;
+      PCPLUS4:    regWriteData = pcPlus4;
+      default:    regWriteData = 'x;
+    endcase
 
   // LW:         Read the base address of the data memory stored in rs1 and
   //             write to rd, rd <= mem[rs1 + immediate].
@@ -120,6 +132,7 @@ module singleCycleTop_elaborated
   // B-Type:     Read rs1 and rs2. No write takes place.
   // I-Type ALU: A logical operation is performed on the data read from rs1 and
   //             the immediate. The result is stored in rd. rs2 output is not used.
+  // JAL:        Store the link address in rd. rd <= pc + 4.
   registerFile u_registerFile
   ( .i_clk
 
@@ -151,6 +164,7 @@ module singleCycleTop_elaborated
   // R-Type ALU: Perform logical/arithmetic operation: rs1 op rs2
   // B-Type:     Subtract, rs1 - rs2 to determine if equal. Result is not used.
   // I-Type ALU: Perform logical/arithmetic operation: rs1 op immediate
+  // JAL:        No operation takes place.
   alu u_alu
   ( .i_a                 (regReadData1)
   , .i_b                 (aluInputB)
@@ -172,6 +186,7 @@ module singleCycleTop_elaborated
   // R-Type ALU: No data gets stored in memory.
   // B-Type:     No data gets stored in memory. Read data is ignored.
   // I-Type ALU: No data gets stored in memory.
+  // JAL:        No data gets stored in memory.
   dataMemory u_dataMemory
   ( .i_clk
 

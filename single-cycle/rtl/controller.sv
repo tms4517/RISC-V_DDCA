@@ -14,7 +14,7 @@ module controller
   , output var logic       o_aluInputBSel
   , output var logic [3:0] o_aluLogicOperation
   , output var logic       o_memWriteEn
-  , output var logic       o_regWriteDataSel
+  , output var logic [1:0] o_regWriteDataSel
   );
 
   // Branch condition is met if there is a branch instruction and the zero flag
@@ -29,6 +29,7 @@ module controller
       R_TYPE_ALU: o_regWriteEn = '1;
       B_TYPE:     o_regWriteEn = '0;
       I_TYPE_ALU: o_regWriteEn = '1;
+      JAL:        o_regWriteEn = '1;
       default:    o_regWriteEn = 'x;
     endcase
 
@@ -42,6 +43,7 @@ module controller
       R_TYPE_ALU: o_aluInputBSel = '0;
       B_TYPE:     o_aluInputBSel = '0;
       I_TYPE_ALU: o_aluInputBSel = '1;
+      JAL:        o_aluInputBSel = '0;
       default:    o_aluInputBSel = 'x;
     endcase
 
@@ -64,6 +66,7 @@ module controller
       R_TYPE_ALU: o_aluLogicOperation = rTypeOperation;
       B_TYPE:     o_aluLogicOperation = SUB;
       I_TYPE_ALU: o_aluLogicOperation = iTypeOperation;
+      JAL:        o_aluLogicOperation = ADD;
       default:    o_aluLogicOperation = 4'bxxxx;
     endcase
 
@@ -75,6 +78,7 @@ module controller
       R_TYPE_ALU: o_memWriteEn = '0;
       B_TYPE:     o_memWriteEn = '0;
       I_TYPE_ALU: o_memWriteEn = '0;
+      JAL:        o_memWriteEn = '0;
       default:    o_memWriteEn = 'x;
     endcase
 
@@ -84,11 +88,12 @@ module controller
   // 0 -> Select the output from the ALU.
   always_comb
     case (i_operand)
-      LW:         o_regWriteDataSel = '1;
-      SW:         o_regWriteDataSel = '1;
-      R_TYPE_ALU: o_regWriteDataSel = '0;
-      B_TYPE:     o_regWriteDataSel = '0;
-      I_TYPE_ALU: o_regWriteDataSel = '0; // Select the output from the ALU.
+      LW:         o_regWriteDataSel = DATAMEMORY;
+      SW:         o_regWriteDataSel = DATAMEMORY;
+      R_TYPE_ALU: o_regWriteDataSel = ALU;
+      B_TYPE:     o_regWriteDataSel = ALU;
+      I_TYPE_ALU: o_regWriteDataSel = ALU;
+      JAL:        o_regWriteDataSel = PCPLUS4;
       default:    o_regWriteDataSel = 'x;
     endcase
 

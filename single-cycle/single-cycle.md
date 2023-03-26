@@ -183,5 +183,23 @@ the data read is one of the inputs to the ALU. The other input to the ALU is the
 sign extended immediate field. The output of the ALU is connected to the
 *i_writeData* port of the register file which is addressed by the rd field.
 
+### JAL
 
+![jal](pics/jal.png)
 
+The purpose of the J-Type instruction - JAL (Jump And Link), is to jump to a
+target address obtained by PC + immediate and store the return address in the
+register rd.
+
+The immediate consists of 21 bits, where the LSB is always 0 and the remaining
+bits are encoded in the instruction. The immediate is added to the pc and the
+*nextPc* is assigned this address.
+
+The current PC is incremented by 4 and is connected to the *regWriteData* port
+of the register file. When the JAL instruction is decoded, a MUX selects *pcPlus4*
+and is able to route the signal.
+
+Below is a schematic of the state elements and combinational logic connected to
+implement the JAL instruction.
+
+![jal schematic](pics/jal_sampleProgram_full.png)

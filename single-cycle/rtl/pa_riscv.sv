@@ -11,6 +11,7 @@ package pa_riscv;
   , R_TYPE_ALU = 7'b0110011
   , B_TYPE     = 7'b1100011
   , I_TYPE_ALU = 7'b0010011
+  , JAL        = 7'b1101111
   } ty_INSTRUCTION_TYPE;
 
   typedef enum logic [3:0]
@@ -20,6 +21,13 @@ package pa_riscv;
   , OR  = 4'b0110
   , XOR = 4'b0100
   } ty_ALU_OP;
+
+  // Select input to the write data port of the ALU.
+  typedef enum logic [1:0]
+  { DATAMEMORY = 2'b01
+  , ALU        = 2'b00
+  , PCPLUS4    = 2'b10
+  } ty_INPUT_TO_WRITEDATA;
 
 endpackage
 

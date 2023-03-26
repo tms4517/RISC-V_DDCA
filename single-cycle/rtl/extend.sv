@@ -23,6 +23,9 @@ module extend
                   i_instruction[11:8], 1'b0};
       I_TYPE_ALU: o_immediateExtended =
                   {{20{i_instruction[31]}}, i_instruction[31:20]};
+      JAL:        o_immediateExtended =
+                  {{12{i_instruction[31]}}, i_instruction[19:12], i_instruction[20],
+                  i_instruction[30:21], 1'b0};
       default:    o_immediateExtended = 32'bx;
     endcase
 
