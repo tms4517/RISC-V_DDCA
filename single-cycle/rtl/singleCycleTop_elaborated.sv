@@ -99,6 +99,7 @@ module singleCycleTop_elaborated
   // B-Type:     immediateExtended is the value the PC is incremented by to
   //             calculate the new branch address.
   // I-Type ALU: immediateExtended is the second input to the ALU.
+  // JAL:        immediateExtended is added to the PC to get the jump address.
   extend u_extend
   ( .i_instruction       (instruction)
 
@@ -163,6 +164,7 @@ module singleCycleTop_elaborated
   // R-Type ALU: Perform logical/arithmetic operation: rs1 op rs2
   // B-Type:     Subtract, rs1 - rs2 to determine if equal. Result is not used.
   // I-Type ALU: Perform logical/arithmetic operation: rs1 op immediate
+  // JAL:        No operation takes place.
   alu u_alu
   ( .i_a                 (regReadData1)
   , .i_b                 (aluInputB)
@@ -184,6 +186,7 @@ module singleCycleTop_elaborated
   // R-Type ALU: No data gets stored in memory.
   // B-Type:     No data gets stored in memory. Read data is ignored.
   // I-Type ALU: No data gets stored in memory.
+  // JAL:        No data gets stored in memory.
   dataMemory u_dataMemory
   ( .i_clk
 
