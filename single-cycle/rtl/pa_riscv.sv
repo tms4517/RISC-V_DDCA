@@ -5,6 +5,7 @@
 
 package pa_riscv;
 
+  // Decode operand.
   typedef enum logic [6:0]
   { LW         = 7'b0000011
   , SW         = 7'b0100011
@@ -14,6 +15,7 @@ package pa_riscv;
   , JAL        = 7'b1101111
   } ty_OPERAND;
 
+  // Alu operations {funct7b5, funct3}.
   typedef enum logic [3:0]
   { ADD = 4'b0000
   , SUB = 4'b1000

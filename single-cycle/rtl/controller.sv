@@ -84,8 +84,6 @@ module controller
 
   // Decode operand to determine if the input to the write data port of the
   // register file should come from the data memory or output from the ALU.
-  // 1 -> Select the output from data memory.
-  // 0 -> Select the output from the ALU.
   always_comb
     case (i_operand)
       LW:         o_regWriteDataSel = DATAMEMORY;
