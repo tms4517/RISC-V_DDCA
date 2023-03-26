@@ -12,7 +12,7 @@ package pa_riscv;
   , B_TYPE     = 7'b1100011
   , I_TYPE_ALU = 7'b0010011
   , JAL        = 7'b1101111
-  } ty_INSTRUCTION_TYPE;
+  } ty_OPERAND;
 
   typedef enum logic [3:0]
   { ADD = 4'b0000
