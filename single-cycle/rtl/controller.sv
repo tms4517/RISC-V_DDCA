@@ -7,7 +7,7 @@ module controller
   , input  var logic [2:0] i_funct3
   , input  var logic       i_funct7bit5
 
-  , input var logic        i_zeroFlag
+  , input  var logic       i_zeroFlag
 
   , output var logic       o_branchCondition
   , output var logic       o_regWriteEn
