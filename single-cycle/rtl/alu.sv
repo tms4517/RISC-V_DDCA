@@ -26,8 +26,8 @@ module alu
   // TODO: Add more logical operations.
   always_comb
     case (i_aluLogicOperation)
-      ADD:     o_result = i_a + i_b;
-      SUB:     o_result = i_a + (~i_b+1'b1);
+      ADD:     o_result = adder;
+      SUB:     o_result = adder;
       AND:     o_result = i_a & i_b;
       OR:      o_result = i_a | i_b;
       XOR:     o_result = i_a ^ i_b;
