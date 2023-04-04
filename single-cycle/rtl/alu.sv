@@ -19,15 +19,19 @@ module alu
 
   // Use a common adder for ADD and SUB. If the operation is subtract, the input
   // to the adder is -b.
-  always_comb isSub = (i_aluLogicOperation[3] == '1);
+  always_comb isSub = |{(i_aluLogicOperation[3] == SUB)
+                      , (i_aluLogicOperation[3] == SLT)
+                      };
   always_comb b = isSub ? (~i_b+1'b1) : i_b;
   always_comb adder = i_a + b;
 
   // TODO: Add more logical operations.
+  // SLT: Add
   always_comb
     case (i_aluLogicOperation)
       ADD:     o_result = adder;
       SUB:     o_result = adder;
+      SLT:     o_result = adder[31];
       AND:     o_result = i_a & i_b;
       OR:      o_result = i_a | i_b;
       XOR:     o_result = i_a ^ i_b;

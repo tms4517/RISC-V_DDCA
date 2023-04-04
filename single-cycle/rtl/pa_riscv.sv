@@ -18,6 +18,7 @@ package pa_riscv;
   // Alu operations {funct7b5, funct3}.
   typedef enum logic [3:0]
   { ADD = 4'b0000
+  , SLT = 4'b0010
   , XOR = 4'b0100
   , OR  = 4'b0110
   , AND = 4'b0111
