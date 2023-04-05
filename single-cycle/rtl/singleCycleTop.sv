@@ -70,7 +70,7 @@
 
 import pa_riscv::*;
 
-module singleCycleTop_elaborated
+module singleCycleTop
   ( input var logic i_clk
   , input var logic i_srst
   );
