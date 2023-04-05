@@ -13,14 +13,15 @@ module alu
   );
 
   logic isSub;
-
   logic [31:0] adder;
   logic [31:0] b;
 
+  logic overflow;
+
   // Use a common adder for ADD and SUB. If the operation is subtract, the input
   // to the adder is -b.
-  always_comb isSub = |{(i_aluLogicOperation[3] == SUB)
-                      , (i_aluLogicOperation[3] == SLT)
+  always_comb isSub = |{(i_aluLogicOperation == SUB)
+                      , (i_aluLogicOperation == SLT)
                       };
   always_comb b = isSub ? (~i_b+1'b1) : i_b;
   always_comb adder = i_a + b;
@@ -39,7 +40,7 @@ module alu
     case (i_aluLogicOperation)
       ADD:     o_result = adder;
       SUB:     o_result = adder;
-      SLT:     o_result = adder[31] ^ overflow;  // TODO: Confirm**
+      SLT:     o_result = {31'b0, (adder[31] ^ overflow)};  // TODO: Confirm**
       AND:     o_result = i_a & i_b;
       OR:      o_result = i_a | i_b;
       XOR:     o_result = i_a ^ i_b;
