@@ -18,7 +18,7 @@ module pc
   // the next address in the instuction memory.
   always_ff @(posedge i_clk)
     if (i_srst)
-      pc_q <= 32'h1000; // As defined in the Sample program, Figure 7.2 of DDCA.
+      pc_q <= '0; // Set to 0 initially to be in accordance with Tb.
     else
       pc_q <= pc_d;
 
