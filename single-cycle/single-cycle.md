@@ -28,14 +28,14 @@ instruction. Its input *nextPc*, indicates the address of the next instruction.
 ### Instruction Memory
 
 The instruction memory has a single read port (simplification). It takes a 32-bit
-instruction, *i_address*, and reads the 32-bit data from that address onto the 
+instruction, *i_address*, and reads the 32-bit data from that address onto the
 *o_instruction* port.
 
 ### Register File
 
-The register file consists of 32-registers of 32-bits each. It consists of two *i_readAddressX* 
-ports, that read data from the memory elements to their respective *o_readDataX* 
-ports. It also consists of an *i_writeAddress* port, that writes data from the 
+The register file consists of 32-registers of 32-bits each. It consists of two *i_readAddressX*
+ports, that read data from the memory elements to their respective *o_readDataX*
+ports. It also consists of an *i_writeAddress* port, that writes data from the
 *i_writeData* port to the memory element when *i_writeEnable* is asserted.
 
 ### Data Memory
@@ -203,3 +203,15 @@ Below is a schematic of the state elements and combinational logic connected to
 implement the JAL instruction.
 
 ![jal schematic](pics/jal_sampleProgram_full.png)
+
+## Testbench
+
+A series of instructions whose final output is known has been provided. The machine
+code for these instructions are defined in *riscvtest.txt* and they are loaded
+into the instruction memory at the beginning of the simulation.
+
+A basic testbench was created which supplies the reset and clock signals  to the
+DUT and probes the data memory. The waveform below, shows the DUT probes with the
+same values as those expected by the provided instructions.
+
+![tb waveform](pics/tb_waveform.png)
