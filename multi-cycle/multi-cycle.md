@@ -36,3 +36,17 @@ results between the steps and designing an fsm so that the controller can
 produces different signals on each step.
 
 The remainder of this text explains the modifications made.
+
+# Modifications
+
+## Memory
+
+The data memory and instruction memory are combined since we can read the
+instruction in one cycle, then read or write the data in another cycle.
+
+## Instruction register
+
+The instruction is read and stored in a new register, *instruction_q* so
+that it is available for future cycles. The register has an enable port called
+*instructionWrite*, which is asserted when the register should be loaded with a
+new instruction.
