@@ -87,12 +87,12 @@ module singleCycleTop
   logic [2:0]  funct3;
 
   // Extract fields from instruction.
-  always_comb operand = instruction[6:0];
-  always_comb rs1     = instruction[19:15];
-  always_comb rs2     = instruction[24:20];
-  always_comb rd      = instruction[11:7];
-  always_comb funct3  = instruction[14:12];
-  always_comb funct7  = instruction[31:25];
+  always_comb operand = instruction_q[6:0];
+  always_comb rs1     = instruction_q[19:15];
+  always_comb rs2     = instruction_q[24:20];
+  always_comb rd      = instruction_q[11:7];
+  always_comb funct3  = instruction_q[14:12];
+  always_comb funct7  = instruction_q[31:25];
 
   // {{{ Main controller
   // Decode the operand to determine the state elements and ALU control signals.
@@ -150,13 +150,25 @@ module singleCycleTop
   instructionAndDataMemory u_instructionAndDataMemory
   ( .i_clk
 
-  , .i_rwAddress                ()
+  , .i_rwAddress                (pc)
 
   , .i_writeEnable              ()
   , .i_writeData                ()
 
   , .o_readDataOrInstruction    ()
   );
+
+  logic [31:0] instruction_d, instruction_q;
+  logic instructionRegWrite;
+
+  // Store the instruction so that it is available in future cycles.
+  always_ff @(posedge i_clk)
+    if (i_srst)
+      instruction_q <= '0;
+    else if (instructionRegWrite)
+      instruction_q <= instruction_d;
+    else
+      instruction_q <= instruction_q;
 
   // }}} Instruction and Data Memory
 
@@ -175,7 +187,7 @@ module singleCycleTop
   // I-Type ALU: immediateExtended is the second input to the ALU.
   // JAL:        immediateExtended is added to the PC to get the jump address.
   extend u_extend
-  ( .i_instruction       (instruction)
+  ( .i_instruction       (instruction_q)
 
   , .o_immediateExtended (immediateExtended)
   );
