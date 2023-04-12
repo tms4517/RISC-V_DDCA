@@ -1,6 +1,6 @@
 `default_nettype none
 
-module dataMemory
+module instructionAndDataMemory
   ( input  var logic        i_clk
 
   , input  var logic [31:0] i_rwAddress
