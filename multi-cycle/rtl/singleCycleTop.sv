@@ -145,14 +145,20 @@ module singleCycleTop
 
   // }}} PC
 
-  // {{{ Instruction Memory
+  // {{{ Instruction and Data Memory
 
-  instructionMemory u_instructionMemory
-  ( .i_address     (pc)
-  , .o_instruction (instruction)
+  instructionAndDataMemory u_instructionAndDataMemory
+  ( .i_clk
+
+  , .i_rwAddress                ()
+
+  , .i_writeEnable              ()
+  , .i_writeData                ()
+
+  , .o_readDataOrInstruction    ()
   );
 
-  // }}} Instruction Memory
+  // }}} Instruction and Data Memory
 
   // {{{ Extend Immediate
 
@@ -244,29 +250,6 @@ module singleCycleTop
   );
 
   // }}} ALU
-
-  // {{{ Data Memory
-
-  logic [31:0] dataFromMemory;
-
-  // LW:         Output data stored in location: mem[rs1 + immediate]
-  // SW:         Store data in memory location given by rs2 <= mem[rs1 + immediate].
-  // R-Type ALU: No data gets stored in memory.
-  // B-Type:     No data gets stored in memory. Read data is ignored.
-  // I-Type ALU: No data gets stored in memory.
-  // JAL:        No data gets stored in memory.
-  dataMemory u_dataMemory
-  ( .i_clk
-
-  , .i_rwAddress   (aluOutput)
-
-  , .i_writeEnable (memWriteEn)
-  , .i_writeData   (regReadData2)
-
-  , .o_readData    (dataFromMemory)
-  );
-
-  // }}} Data Memory
 
 endmodule
 
