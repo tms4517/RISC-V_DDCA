@@ -196,7 +196,7 @@ module singleCycleTop
 
   // {{{ Register File
 
-  logic [31:0] regReadData1;
+  logic [31:0] regReadData1_d, regReadData1_q;
   logic [31:0] regReadData2;
   logic [31:0] regWriteData;
 
@@ -229,9 +229,16 @@ module singleCycleTop
   , .i_writeAddress (rd)
   , .i_writeData    (regWriteData)
 
-  , .o_readData1    (regReadData1)
+  , .o_readData1    (regReadData1_d)
   , .o_readData2    (regReadData2)
   );
+
+  // Store RD1 in a register.
+  always_ff @(posedge i_clk)
+    if (i_srst)
+      regReadData1_q <= '0;
+    else
+      regReadData1_q <= regReadData1_d;
 
   // }}} Register File
 
