@@ -8,7 +8,7 @@ module instructionAndDataMemory
   , input  var logic        i_writeEnable
   , input  var logic [31:0] i_writeData
 
-  , output var logic [31:0] o_readData
+  , output var logic [31:0] o_readDataOrInstruction
   );
 
   // A memory array of 64 32-bit elements.
