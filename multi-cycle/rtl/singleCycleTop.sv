@@ -233,7 +233,7 @@ module singleCycleTop
   , .o_readData2    (regReadData2)
   );
 
-  // Store RD1 in a register.
+  // Store RD1 in a register to break critical timing path.
   always_ff @(posedge i_clk)
     if (i_srst)
       regReadData1_q <= '0;
@@ -244,7 +244,7 @@ module singleCycleTop
 
   // {{{ ALU
 
-  logic [31:0] aluOutput;
+  logic [31:0] aluOutput_d, aluOutput_q;
   logic [31:0] aluInputB;
   logic        zeroFlag;
 
@@ -263,10 +263,17 @@ module singleCycleTop
   , .i_b                 (aluInputB)
   , .i_aluLogicOperation (aluLogicOperation)
 
-  , .o_result            (aluOutput)
+  , .o_result            (aluOutput_d)
 
   , .o_zeroFlag          (zeroFlag)
   );
+
+  // Store ALU output in a register to break critical timing path.
+  always_ff @(posedge i_clk)
+    if (i_srst)
+      aluOutput_q <= '0;
+    else
+      aluOutput_q <= aluOutput_d;
 
   // }}} ALU
 
