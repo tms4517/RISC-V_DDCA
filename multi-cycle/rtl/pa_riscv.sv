@@ -35,7 +35,7 @@ package pa_riscv;
   // Select ALU input A.
   typedef enum logic [1:0]
   { PC              = 2'b00
-  , OTHER           = 2'b01
+  , OLD_PC          = 2'b01
   , REG_READ_DATA_1 = 2'b10
   } ty_INPUT_TO_WRITEDATA;
 

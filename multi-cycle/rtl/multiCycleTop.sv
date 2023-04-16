@@ -128,8 +128,11 @@ module singleCycleTop
   // {{{ PC
 
   logic [31:0] nextPc;
+  logic [31:0] oldPc;
   logic [31:0] pcTarget;
   logic [31:0] pcPlus4;
+
+  ### TODO: FIX
 
   always_comb pcPlus4 = pc + 32'h4;
 
@@ -147,6 +150,15 @@ module singleCycleTop
 
   , .o_pc        (pc)
   );
+
+  // Store the instruction so that it is available in future cycles.
+  always_ff @(posedge i_clk)
+    if (i_srst)
+      oldPc <= '0;
+    else if (oldPcWriteEn)
+      oldPc <= pc;
+    else
+      oldPc <= oldPc;
 
   // }}} PC
 
@@ -224,6 +236,7 @@ module singleCycleTop
   logic [31:0] regReadData2;
   logic [31:0] regWriteData;
 
+  ### TODO: FIX
   // Depending on the instruction, select the data to be written to reg file.
   always_comb
     case (regWriteDataSel)
@@ -286,7 +299,7 @@ module singleCycleTop
   always_comb
     case (aluInputASel)
       PC:              aluInputA = pc;
-      OTHER:           aluInputA = ;
+      OLD_PC:          aluInputA = oldPc;
       REG_READ_DATA_1: aluInputA = regReadData1_q;
       default:         aluInputA = 'x;
     endcase
