@@ -99,6 +99,7 @@ module singleCycleTop
 
   logic       regWriteEn;
   logic       memWriteEn;
+  logic       aluInputASel;
   logic       aluInputBSel;
   logic [3:0] aluLogicOperation;
   logic [1:0] regWriteDataSel;
@@ -262,10 +263,27 @@ module singleCycleTop
   // {{{ ALU
 
   logic [31:0] aluOutput_d, aluOutput_q;
+  logic [31:0] aluInputA;
   logic [31:0] aluInputB;
   logic        zeroFlag;
 
-  always_comb aluInputB = aluInputBSel ? immediateExtended : regReadData2;
+  // MUX to select ALU input A.
+  always_comb
+    case (aluInputASel)
+      PC:              aluInputA = pc;
+      OTHER:           aluInputA = ;
+      REG_READ_DATA_1: aluInputA = regReadData1_q;
+      default:         aluInputA = 'x;
+    endcase
+
+  // MUX to select ALU input B.
+  always_comb
+    case (aluInputBSel)
+      OTHER:              aluInputB = ;
+      IMMEDIATE_EXTENDED: aluInputB = immediateExtended;
+      FOUR:               aluInputB = 4;
+      default:            aluInputB = 'x;
+    endcase
 
   // LW:         Calculate the data memory address:
   //             base address (rs1) + address offset (immediate).
@@ -276,7 +294,7 @@ module singleCycleTop
   // I-Type ALU: Perform logical/arithmetic operation: rs1 op immediate
   // JAL:        No operation takes place.
   alu u_alu
-  ( .i_a                 (regReadData1)
+  ( .i_a                 (aluInputA)
   , .i_b                 (aluInputB)
   , .i_aluLogicOperation (aluLogicOperation)
 
