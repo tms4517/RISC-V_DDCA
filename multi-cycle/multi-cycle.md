@@ -50,3 +50,9 @@ The instruction is read and stored in a new register, *instruction_q* so
 that it is available for future cycles. The register has an enable port called
 *instructionWrite*, which is asserted when the register should be loaded with a
 new instruction.
+
+## lw
+
+
+
+** NOTE: ** Multicycle processor is still work in progress.

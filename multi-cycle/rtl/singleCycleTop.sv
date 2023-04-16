@@ -87,23 +87,25 @@ module singleCycleTop
   logic [2:0]  funct3;
 
   // Extract fields from instruction.
-  always_comb operand = instruction[6:0];
-  always_comb rs1     = instruction[19:15];
-  always_comb rs2     = instruction[24:20];
-  always_comb rd      = instruction[11:7];
-  always_comb funct3  = instruction[14:12];
-  always_comb funct7  = instruction[31:25];
+  always_comb operand = instruction_q[6:0];
+  always_comb rs1     = instruction_q[19:15];
+  always_comb rs2     = instruction_q[24:20];
+  always_comb rd      = instruction_q[11:7];
+  always_comb funct3  = instruction_q[14:12];
+  always_comb funct7  = instruction_q[31:25];
 
   // {{{ Main controller
   // Decode the operand to determine the state elements and ALU control signals.
 
   logic       regWriteEn;
   logic       memWriteEn;
+  logic       aluInputASel;
   logic       aluInputBSel;
   logic [3:0] aluLogicOperation;
   logic [1:0] regWriteDataSel;
   logic       branchCondition;
   logic       jump;
+  logic       pcWriteEn;
 
   controller u_controller
   ( .i_operand           (operand)
@@ -139,24 +141,55 @@ module singleCycleTop
   ( .i_clk
   , .i_srst
 
-  , .i_nextPc (nextPc)
-  , .o_pc     (pc)
+  , .i_nextPc    (nextPc)
+  , .i_pcWriteEn (pcWriteEn)
+
+  , .o_pc        (pc)
   );
 
   // }}} PC
 
   // {{{ Instruction and Data Memory
 
+  logic addressSrc;
+  logic [31:0] instructionOrDataAddress;
+
+  // MUX to decode address input to instructionAndDataMemory.
+  always_comb instructionOrDataAddress = addressSrc ? aluOutput_q : pc;
+
   instructionAndDataMemory u_instructionAndDataMemory
   ( .i_clk
 
-  , .i_rwAddress                ()
+  , .i_rwAddress                (instructionOrDataAddress)
 
   , .i_writeEnable              ()
   , .i_writeData                ()
 
   , .o_readDataOrInstruction    ()
   );
+
+  logic [31:0] instruction_d, instruction_q;
+  logic instructionRegWrite;
+
+  // Store the instruction so that it is available in future cycles and to break
+  // critical timing path.
+  always_ff @(posedge i_clk)
+    if (i_srst)
+      instruction_q <= '0;
+    else if (instructionRegWrite)
+      instruction_q <= instruction_d;
+    else
+      instruction_q <= instruction_q;
+
+  logic [31:0] data_d, data_q;
+
+  // Store the data so that it is available in future cycles and to break
+  // critical timing path.
+  always_ff @(posedge i_clk)
+    if (i_srst)
+      data_q <= '0;
+    else
+      data_q <= data_d;
 
   // }}} Instruction and Data Memory
 
@@ -175,7 +208,7 @@ module singleCycleTop
   // I-Type ALU: immediateExtended is the second input to the ALU.
   // JAL:        immediateExtended is added to the PC to get the jump address.
   extend u_extend
-  ( .i_instruction       (instruction)
+  ( .i_instruction       (instruction_q)
 
   , .o_immediateExtended (immediateExtended)
   );
@@ -184,14 +217,14 @@ module singleCycleTop
 
   // {{{ Register File
 
-  logic [31:0] regReadData1;
+  logic [31:0] regReadData1_d, regReadData1_q;
   logic [31:0] regReadData2;
   logic [31:0] regWriteData;
 
   // Depending on the instruction, select the data to be written to reg file.
   always_comb
     case (regWriteDataSel)
-      DATAMEMORY: regWriteData = dataFromMemory;
+      DATAMEMORY: regWriteData = data_q;
       ALU:        regWriteData = aluOutput;
       PCPLUS4:    regWriteData = pcPlus4;
       default:    regWriteData = 'x;
@@ -217,19 +250,43 @@ module singleCycleTop
   , .i_writeAddress (rd)
   , .i_writeData    (regWriteData)
 
-  , .o_readData1    (regReadData1)
+  , .o_readData1    (regReadData1_d)
   , .o_readData2    (regReadData2)
   );
+
+  // Store RD1 in a register to break critical timing path.
+  always_ff @(posedge i_clk)
+    if (i_srst)
+      regReadData1_q <= '0;
+    else
+      regReadData1_q <= regReadData1_d;
 
   // }}} Register File
 
   // {{{ ALU
 
-  logic [31:0] aluOutput;
+  logic [31:0] aluOutput_d, aluOutput_q;
+  logic [31:0] aluInputA;
   logic [31:0] aluInputB;
   logic        zeroFlag;
 
-  always_comb aluInputB = aluInputBSel ? immediateExtended : regReadData2;
+  // MUX to select ALU input A.
+  always_comb
+    case (aluInputASel)
+      PC:              aluInputA = pc;
+      OTHER:           aluInputA = ;
+      REG_READ_DATA_1: aluInputA = regReadData1_q;
+      default:         aluInputA = 'x;
+    endcase
+
+  // MUX to select ALU input B.
+  always_comb
+    case (aluInputBSel)
+      OTHER:              aluInputB = ;
+      IMMEDIATE_EXTENDED: aluInputB = immediateExtended;
+      FOUR:               aluInputB = 4;
+      default:            aluInputB = 'x;
+    endcase
 
   // LW:         Calculate the data memory address:
   //             base address (rs1) + address offset (immediate).
@@ -240,14 +297,21 @@ module singleCycleTop
   // I-Type ALU: Perform logical/arithmetic operation: rs1 op immediate
   // JAL:        No operation takes place.
   alu u_alu
-  ( .i_a                 (regReadData1)
+  ( .i_a                 (aluInputA)
   , .i_b                 (aluInputB)
   , .i_aluLogicOperation (aluLogicOperation)
 
-  , .o_result            (aluOutput)
+  , .o_result            (aluOutput_d)
 
   , .o_zeroFlag          (zeroFlag)
   );
+
+  // Store ALU output in a register to break critical timing path.
+  always_ff @(posedge i_clk)
+    if (i_srst)
+      aluOutput_q <= '0;
+    else
+      aluOutput_q <= aluOutput_d;
 
   // }}} ALU
 
