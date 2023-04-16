@@ -294,7 +294,7 @@ module singleCycleTop
   // MUX to select ALU input B.
   always_comb
     case (aluInputBSel)
-      OTHER:              aluInputB = ;
+      REG_READ_DATA_2:    aluInputB = regReadData2_q;
       IMMEDIATE_EXTENDED: aluInputB = immediateExtended;
       FOUR:               aluInputB = 4;
       default:            aluInputB = 'x;
