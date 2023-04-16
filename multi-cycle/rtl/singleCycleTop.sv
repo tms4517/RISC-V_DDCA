@@ -105,6 +105,7 @@ module singleCycleTop
   logic [1:0] regWriteDataSel;
   logic       branchCondition;
   logic       jump;
+  logic       pcWriteEn;
 
   controller u_controller
   ( .i_operand           (operand)
@@ -140,8 +141,10 @@ module singleCycleTop
   ( .i_clk
   , .i_srst
 
-  , .i_nextPc (nextPc)
-  , .o_pc     (pc)
+  , .i_nextPc    (nextPc)
+  , .i_pcWriteEn (pcWriteEn)
+
+  , .o_pc        (pc)
   );
 
   // }}} PC
