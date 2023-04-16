@@ -154,6 +154,7 @@ module singleCycleTop
 
   logic addressSrc;
   logic [31:0] instructionOrDataAddress;
+  logic [31:0] dataOrInstruction;
 
   // MUX to decode address input to instructionAndDataMemory.
   always_comb instructionOrDataAddress = addressSrc ? aluOutput_q : pc;
@@ -166,7 +167,7 @@ module singleCycleTop
   , .i_writeEnable              (memWriteEn)
   , .i_writeData                (regReadData2_q)
 
-  , .o_readDataOrInstruction    ()
+  , .o_readDataOrInstruction    (dataOrInstruction)
   );
 
   logic [31:0] instruction_d, instruction_q;
@@ -178,7 +179,7 @@ module singleCycleTop
     if (i_srst)
       instruction_q <= '0;
     else if (instructionRegWrite)
-      instruction_q <= instruction_d;
+      instruction_q <= dataOrInstruction;
     else
       instruction_q <= instruction_q;
 
@@ -190,7 +191,7 @@ module singleCycleTop
     if (i_srst)
       data_q <= '0;
     else
-      data_q <= data_d;
+      data_q <= dataOrInstruction;
 
   // }}} Instruction and Data Memory
 
