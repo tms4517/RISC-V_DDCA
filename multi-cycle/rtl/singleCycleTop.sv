@@ -147,10 +147,16 @@ module singleCycleTop
 
   // {{{ Instruction and Data Memory
 
+  logic addressSrc;
+  logic [31:0] instructionOrDataAddress;
+
+  // MUX to decode address input to instructionAndDataMemory.
+  always_comb instructionOrDataAddress = addressSrc ? aluOutput_q : pc;
+
   instructionAndDataMemory u_instructionAndDataMemory
   ( .i_clk
 
-  , .i_rwAddress                (pc)
+  , .i_rwAddress                (instructionOrDataAddress)
 
   , .i_writeEnable              ()
   , .i_writeData                ()
@@ -161,7 +167,8 @@ module singleCycleTop
   logic [31:0] instruction_d, instruction_q;
   logic instructionRegWrite;
 
-  // Store the instruction so that it is available in future cycles.
+  // Store the instruction so that it is available in future cycles and to break
+  // critical timing path.
   always_ff @(posedge i_clk)
     if (i_srst)
       instruction_q <= '0;
@@ -169,6 +176,16 @@ module singleCycleTop
       instruction_q <= instruction_d;
     else
       instruction_q <= instruction_q;
+
+  logic [31:0] data_d, data_q;
+
+  // Store the data so that it is available in future cycles and to break
+  // critical timing path.
+  always_ff @(posedge i_clk)
+    if (i_srst)
+      data_q <= '0;
+    else
+      data_q <= data_d;
 
   // }}} Instruction and Data Memory
 
@@ -203,7 +220,7 @@ module singleCycleTop
   // Depending on the instruction, select the data to be written to reg file.
   always_comb
     case (regWriteDataSel)
-      DATAMEMORY: regWriteData = dataFromMemory;
+      DATAMEMORY: regWriteData = data_q;
       ALU:        regWriteData = aluOutput;
       PCPLUS4:    regWriteData = pcPlus4;
       default:    regWriteData = 'x;
