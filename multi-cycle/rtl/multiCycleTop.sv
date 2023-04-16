@@ -106,6 +106,7 @@ module singleCycleTop
   logic       branchCondition;
   logic       jump;
   logic       pcWriteEn;
+  logic       memWriteEn;
 
   controller u_controller
   ( .i_operand           (operand)
@@ -162,8 +163,8 @@ module singleCycleTop
 
   , .i_rwAddress                (instructionOrDataAddress)
 
-  , .i_writeEnable              ()
-  , .i_writeData                ()
+  , .i_writeEnable              (memWriteEn)
+  , .i_writeData                (regReadData2_q)
 
   , .o_readDataOrInstruction    ()
   );
@@ -218,6 +219,7 @@ module singleCycleTop
   // {{{ Register File
 
   logic [31:0] regReadData1_d, regReadData1_q;
+  logic [31:0] regReadData2_d, regReadData2_q;
   logic [31:0] regReadData2;
   logic [31:0] regWriteData;
 
@@ -254,12 +256,21 @@ module singleCycleTop
   , .o_readData2    (regReadData2)
   );
 
-  // Store RD1 in a register to break critical timing path.
+  // Store RD1 in a register so that it is available in future cycles and to break
+  // critical timing path.
   always_ff @(posedge i_clk)
     if (i_srst)
       regReadData1_q <= '0;
     else
       regReadData1_q <= regReadData1_d;
+
+  // Store RD2 in a register so that it is available in future cycles and to break
+  // critical timing path.
+  always_ff @(posedge i_clk)
+    if (i_srst)
+      regReadData2_q <= '0;
+    else
+      regReadData2_q <= regReadData2_d;
 
   // }}} Register File
 
