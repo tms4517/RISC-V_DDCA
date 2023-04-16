@@ -106,6 +106,7 @@ module singleCycleTop
   logic       branchCondition;
   logic       jump;
   logic       pcWriteEn;
+  logic       memWriteEn;
 
   controller u_controller
   ( .i_operand           (operand)
@@ -153,6 +154,7 @@ module singleCycleTop
 
   logic addressSrc;
   logic [31:0] instructionOrDataAddress;
+  logic [31:0] dataOrInstruction;
 
   // MUX to decode address input to instructionAndDataMemory.
   always_comb instructionOrDataAddress = addressSrc ? aluOutput_q : pc;
@@ -162,10 +164,10 @@ module singleCycleTop
 
   , .i_rwAddress                (instructionOrDataAddress)
 
-  , .i_writeEnable              ()
-  , .i_writeData                ()
+  , .i_writeEnable              (memWriteEn)
+  , .i_writeData                (regReadData2_q)
 
-  , .o_readDataOrInstruction    ()
+  , .o_readDataOrInstruction    (dataOrInstruction)
   );
 
   logic [31:0] instruction_d, instruction_q;
@@ -177,7 +179,7 @@ module singleCycleTop
     if (i_srst)
       instruction_q <= '0;
     else if (instructionRegWrite)
-      instruction_q <= instruction_d;
+      instruction_q <= dataOrInstruction;
     else
       instruction_q <= instruction_q;
 
@@ -189,7 +191,7 @@ module singleCycleTop
     if (i_srst)
       data_q <= '0;
     else
-      data_q <= data_d;
+      data_q <= dataOrInstruction;
 
   // }}} Instruction and Data Memory
 
@@ -218,6 +220,7 @@ module singleCycleTop
   // {{{ Register File
 
   logic [31:0] regReadData1_d, regReadData1_q;
+  logic [31:0] regReadData2_d, regReadData2_q;
   logic [31:0] regReadData2;
   logic [31:0] regWriteData;
 
@@ -254,12 +257,21 @@ module singleCycleTop
   , .o_readData2    (regReadData2)
   );
 
-  // Store RD1 in a register to break critical timing path.
+  // Store RD1 in a register so that it is available in future cycles and to break
+  // critical timing path.
   always_ff @(posedge i_clk)
     if (i_srst)
       regReadData1_q <= '0;
     else
       regReadData1_q <= regReadData1_d;
+
+  // Store RD2 in a register so that it is available in future cycles and to break
+  // critical timing path.
+  always_ff @(posedge i_clk)
+    if (i_srst)
+      regReadData2_q <= '0;
+    else
+      regReadData2_q <= regReadData2_d;
 
   // }}} Register File
 
@@ -282,7 +294,7 @@ module singleCycleTop
   // MUX to select ALU input B.
   always_comb
     case (aluInputBSel)
-      OTHER:              aluInputB = ;
+      REG_READ_DATA_2:    aluInputB = regReadData2_q;
       IMMEDIATE_EXTENDED: aluInputB = immediateExtended;
       FOUR:               aluInputB = 4;
       default:            aluInputB = 'x;

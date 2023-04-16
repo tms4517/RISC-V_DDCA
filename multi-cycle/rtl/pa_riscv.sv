@@ -41,7 +41,7 @@ package pa_riscv;
 
   // Select ALU input B.
   typedef enum logic [1:0]
-  { OTHER              = 2'b00
+  { REG_READ_DATA_2    = 2'b00
   , IMMEDIATE_EXTENDED = 2'b01
   , FOUR               = 2'b10
   } ty_INPUT_TO_WRITEDATA;
