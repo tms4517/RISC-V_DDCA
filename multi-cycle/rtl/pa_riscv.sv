@@ -31,21 +31,21 @@ package pa_riscv;
   { ALU_OUTPUT_REG = 2'b00
   , DATA_REG       = 2'b01
   , ALU            = 2'b10
-  } ty_INPUT_TO_WRITEDATA;
+  } ty_RESULT;
 
   // Select ALU input A.
   typedef enum logic [1:0]
   { PC              = 2'b00
   , OLD_PC          = 2'b01
   , REG_READ_DATA_1 = 2'b10
-  } ty_INPUT_TO_WRITEDATA;
+  } ty_ALU_INPUT_1;
 
   // Select ALU input B.
   typedef enum logic [1:0]
   { REG_READ_DATA_2    = 2'b00
   , IMMEDIATE_EXTENDED = 2'b01
   , FOUR               = 2'b10
-  } ty_INPUT_TO_WRITEDATA;
+  } ty_ALU_INPUT_2;
 
 endpackage
 

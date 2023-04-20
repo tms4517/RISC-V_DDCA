@@ -5,7 +5,7 @@ module pc
   , input  var logic        i_srst
 
   , input  var logic [31:0] i_nextPc
-  , input  var logic        pcWriteEn
+  , input  var logic        i_pcWriteEn
 
   , output var logic [31:0] o_pc
   );
@@ -20,7 +20,7 @@ module pc
   always_ff @(posedge i_clk)
     if (i_srst)
       pc_q <= '0; // Set to 0 initially to be in accordance with Tb.
-    else if (pcWriteEn)
+    else if (i_pcWriteEn)
       pc_q <= pc_d;
     else
       pc_q <= pc_q;
