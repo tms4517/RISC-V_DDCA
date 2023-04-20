@@ -132,14 +132,6 @@ module singleCycleTop
   logic [31:0] pcTarget;
   logic [31:0] pcPlus4;
 
-  ### TODO: FIX
-
-  always_comb pcPlus4 = pc + 32'h4;
-
-  always_comb pcTarget = pc + immediateExtended;
-
-  always_comb nextPc = (branchCondition || (operand == JAL)) ?
-                        pcTarget : pcPlus4;
 
   pc u_pc
   ( .i_clk
