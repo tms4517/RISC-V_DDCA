@@ -128,25 +128,28 @@ module singleCycleTop
   // {{{ PC
 
   logic [31:0] nextPc;
+  logic [31:0] oldPc;
   logic [31:0] pcTarget;
   logic [31:0] pcPlus4;
-
-  always_comb pcPlus4 = pc + 32'h4;
-
-  always_comb pcTarget = pc + immediateExtended;
-
-  always_comb nextPc = (branchCondition || (operand == JAL)) ?
-                        pcTarget : pcPlus4;
 
   pc u_pc
   ( .i_clk
   , .i_srst
 
-  , .i_nextPc    (nextPc)
+  , .i_nextPc    (result)
   , .i_pcWriteEn (pcWriteEn)
 
   , .o_pc        (pc)
   );
+
+  // Store the instruction so that it is available in future cycles.
+  always_ff @(posedge i_clk)
+    if (i_srst)
+      oldPc <= '0;
+    else if (oldPcWriteEn)
+      oldPc <= pc;
+    else
+      oldPc <= oldPc;
 
   // }}} PC
 
@@ -157,7 +160,7 @@ module singleCycleTop
   logic [31:0] dataOrInstruction;
 
   // MUX to decode address input to instructionAndDataMemory.
-  always_comb instructionOrDataAddress = addressSrc ? aluOutput_q : pc;
+  always_comb instructionOrDataAddress = addressSrc ? result : pc;
 
   instructionAndDataMemory u_instructionAndDataMemory
   ( .i_clk
@@ -174,7 +177,7 @@ module singleCycleTop
   logic instructionRegWrite;
 
   // Store the instruction so that it is available in future cycles and to break
-  // critical timing path.
+  // the critical timing path.
   always_ff @(posedge i_clk)
     if (i_srst)
       instruction_q <= '0;
@@ -185,7 +188,7 @@ module singleCycleTop
 
   logic [31:0] data_d, data_q;
 
-  // Store the data so that it is available in future cycles and to break
+  // Store the data so that it is available in future cycles and to break the
   // critical timing path.
   always_ff @(posedge i_clk)
     if (i_srst)
@@ -224,15 +227,6 @@ module singleCycleTop
   logic [31:0] regReadData2;
   logic [31:0] regWriteData;
 
-  // Depending on the instruction, select the data to be written to reg file.
-  always_comb
-    case (regWriteDataSel)
-      DATAMEMORY: regWriteData = data_q;
-      ALU:        regWriteData = aluOutput;
-      PCPLUS4:    regWriteData = pcPlus4;
-      default:    regWriteData = 'x;
-    endcase
-
   // LW:         Read the base address of the data memory stored in rs1 and
   //             write to rd, rd <= mem[rs1 + immediate].
   // SW:         Read the base address of the data memory stored in rs1 and read
@@ -251,7 +245,7 @@ module singleCycleTop
 
   , .i_writeEnable  (regWriteEn)
   , .i_writeAddress (rd)
-  , .i_writeData    (regWriteData)
+  , .i_writeData    (result)
 
   , .o_readData1    (regReadData1_d)
   , .o_readData2    (regReadData2)
@@ -286,7 +280,7 @@ module singleCycleTop
   always_comb
     case (aluInputASel)
       PC:              aluInputA = pc;
-      OTHER:           aluInputA = ;
+      OLD_PC:          aluInputA = oldPc;
       REG_READ_DATA_1: aluInputA = regReadData1_q;
       default:         aluInputA = 'x;
     endcase
@@ -326,6 +320,18 @@ module singleCycleTop
       aluOutput_q <= aluOutput_d;
 
   // }}} ALU
+
+  logic [31:0] result;
+
+  // Depending on the instruction, select the data to be written to reg file or
+  // the address to the instructionOrDataMemory or the next PC value.
+  always_comb
+    case (regWriteDataSel)
+      ALU_OUTPUT_REG: result = aluOutput_q;
+      DATA_REG:       result = data_q;
+      ALU:            result = aluOutput_d;
+      default:        result = 'x;
+    endcase
 
 endmodule
 

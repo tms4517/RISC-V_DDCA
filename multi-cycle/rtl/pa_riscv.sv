@@ -25,17 +25,18 @@ package pa_riscv;
   , SUB = 4'b1000
   } ty_ALU_OP;
 
-  // Select input to the write data port of the ALU.
+  // Select the data to be written to reg file or the address to the
+  // instructionOrDataMemory or the next PC value.
   typedef enum logic [1:0]
-  { ALU        = 2'b00
-  , DATAMEMORY = 2'b01
-  , PCPLUS4    = 2'b10
+  { ALU_OUTPUT_REG = 2'b00
+  , DATA_REG       = 2'b01
+  , ALU            = 2'b10
   } ty_INPUT_TO_WRITEDATA;
 
   // Select ALU input A.
   typedef enum logic [1:0]
   { PC              = 2'b00
-  , OTHER           = 2'b01
+  , OLD_PC          = 2'b01
   , REG_READ_DATA_1 = 2'b10
   } ty_INPUT_TO_WRITEDATA;
 
