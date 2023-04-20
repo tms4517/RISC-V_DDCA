@@ -25,7 +25,7 @@ module instructionAndDataMemory
       RAM[i_rwAddress[7:2]] <= i_writeData;
 
   // Read data from the specific memory address.
-  always_comb o_readData = RAM[i_rwAddress[7:2]];
+  always_comb o_readDataOrInstruction = RAM[i_rwAddress[7:2]];
 
 endmodule
 

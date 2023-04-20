@@ -106,7 +106,7 @@ module singleCycleTop
   logic       branchCondition;
   logic       jump;
   logic       pcWriteEn;
-  logic       memWriteEn;
+  logic       oldPcWriteEn;
 
   controller u_controller
   ( .i_operand           (operand)
@@ -127,10 +127,7 @@ module singleCycleTop
 
   // {{{ PC
 
-  logic [31:0] nextPc;
-  logic [31:0] oldPc;
-  logic [31:0] pcTarget;
-  logic [31:0] pcPlus4;
+  logic [31:0] oldPc_q;
 
   pc u_pc
   ( .i_clk
@@ -145,11 +142,11 @@ module singleCycleTop
   // Store the instruction so that it is available in future cycles.
   always_ff @(posedge i_clk)
     if (i_srst)
-      oldPc <= '0;
+      oldPc_q <= '0;
     else if (oldPcWriteEn)
-      oldPc <= pc;
+      oldPc_q <= pc;
     else
-      oldPc <= oldPc;
+      oldPc_q <= oldPc_q;
 
   // }}} PC
 
@@ -280,7 +277,7 @@ module singleCycleTop
   always_comb
     case (aluInputASel)
       PC:              aluInputA = pc;
-      OLD_PC:          aluInputA = oldPc;
+      OLD_PC:          aluInputA = oldPc_q;
       REG_READ_DATA_1: aluInputA = regReadData1_q;
       default:         aluInputA = 'x;
     endcase
