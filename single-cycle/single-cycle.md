@@ -55,13 +55,8 @@ control the data-path.
 
 ## Core Instructions
 
-A top level module - *singleCycleTop_elaborated.sv* connects the state elements
+A top level module - *singleCycleTop.sv* connects the state elements
 to the combinational logic.
-
-The following sample program exercises different types of instructions and it
-will be used to guide the combinational logic connections.
-
-![sample program](pics/sample_program.png)
 
 ### LW
 
